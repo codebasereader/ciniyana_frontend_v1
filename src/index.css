@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  body {
+    margin: 0;
+    min-width: 320px;
+    font-family: "Baloo Tamma 2", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    background-color: #ffffff;
+    color: #1a1a1a;
+  }
+
+  #root {
+    min-height: 100vh;
+  }
+
+  a,
+  button {
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      opacity 0.2s ease,
+      transform 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+
+  /* Transform/filter only — never fade imgs via CSS (causes black flash with motion) */
+  img {
+    transition:
+      transform 0.4s ease,
+      filter 0.35s ease;
+  }
+
+  /* Hide scrollbar on nav overflow while keeping scroll */
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+}
