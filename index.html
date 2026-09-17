@@ -1,16 +1,41 @@
 <!doctype html>
-<html lang="en">
+<html lang="kn">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/logo/icon.webp" />
+    <link rel="icon" type="image/webp" href="/logo/icon.webp" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#8B1E22" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Baloo+Tamma+2:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <title>Ciniyaana</title>
+
+    <!--
+      Fallback meta for crawlers/scrapers that don't run JS (Facebook/WhatsApp
+      link previews, etc). Every route overrides these via react-helmet-async
+      once the app hydrates (see src/components/seo/Seo.jsx), which then
+      removes these data-static-seo tags — see the cleanup effect in App.jsx —
+      so a JS-executing viewer never sees both sets at once.
+    -->
+    <title data-static-seo="true">Ciniyaana | Kannada Cinema News, Articles &amp; Photo Stories</title>
+    <meta
+      data-static-seo="true"
+      name="description"
+      content="Ciniyaana, from the Karnataka Chalanachitra Academy — Kannada cinema news, articles, photo stories, posters and nostalgic remembrances in one place."
+    />
+    <meta data-static-seo="true" property="og:site_name" content="Ciniyaana" />
+    <meta data-static-seo="true" property="og:type" content="website" />
+    <meta data-static-seo="true" property="og:title" content="Ciniyaana | Kannada Cinema News, Articles &amp; Photo Stories" />
+    <meta
+      data-static-seo="true"
+      property="og:description"
+      content="Ciniyaana, from the Karnataka Chalanachitra Academy — Kannada cinema news, articles, photo stories, posters and nostalgic remembrances in one place."
+    />
+    <!-- TODO: swap for the real production domain (kept in sync with src/constants/site.js) -->
+    <meta data-static-seo="true" property="og:image" content="https://www.ciniyaana.com/logo/logo_en.png" />
+    <meta data-static-seo="true" name="twitter:card" content="summary_large_image" />
   </head>
   <body>
     <div id="root"></div>

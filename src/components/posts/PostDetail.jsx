@@ -9,8 +9,11 @@ import {
 } from 'react-icons/fa'
 import { FaXTwitter } from 'react-icons/fa6'
 import KnockoutLogo from '../ui/KnockoutLogo'
+import { Seo } from '../seo'
 import { selectLanguage } from '../../store/slices/languageSlice'
 import { CREAM_MINT_STRIPE } from '../section/sectionThemes'
+import { toExcerpt } from '../../lib/text'
+import { toAbsoluteUrl } from '../../lib/url'
 
 /**
  * Detail view — 2-col grid:
@@ -41,9 +44,29 @@ export default function PostDetail({
   const sectionLabel = language === 'en' ? sectionLabelEn : sectionLabelKn
 
   const shareUrl = typeof window !== 'undefined' ? window.location.href : ''
+  const seoDescription = toExcerpt(body)
+  const seoImage = toAbsoluteUrl(post.image)
+  const seoPath = `${basePath}/${post.slug}`
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: title,
+    description: seoDescription,
+    image: seoImage ? [seoImage] : undefined,
+    ...(post.date ? { datePublished: post.date } : {}),
+  }
 
   return (
     <article className="w-full bg-white">
+      <Seo
+        title={title}
+        description={seoDescription}
+        image={seoImage}
+        path={seoPath}
+        type="article"
+        publishedTime={post.date || undefined}
+        jsonLd={jsonLd}
+      />
       <div className="grid w-full grid-cols-1 md:grid-cols-[1.25fr_1fr]">
         {/* LEFT — background + image only */}
         <div className="relative min-w-0 overflow-visible" style={CREAM_MINT_STRIPE}>

@@ -1,14 +1,23 @@
+import { useSelector } from 'react-redux'
 import { SectionHero } from '../../components/section'
 import { SECTION_THEMES } from '../../components/section/sectionThemes'
+import { Seo } from '../../components/seo'
+import { selectLanguage } from '../../store/slices/languageSlice'
 
 /**
  * Shared page shell — section hero + content slot for gallery later.
  */
 export default function MenuPageLayout({ data, children }) {
   const theme = SECTION_THEMES[data.id] || SECTION_THEMES['flash-back']
+  const language = useSelector(selectLanguage)
 
   return (
     <div className="w-full overflow-visible">
+      <Seo
+        title={language === 'en' ? data.title.en : data.title.kn}
+        description={language === 'en' ? data.description.en : data.description.kn}
+        path={`/${data.slug}`}
+      />
       <SectionHero
         logoKn={data.logos.kn}
         logoEn={data.logos.en}

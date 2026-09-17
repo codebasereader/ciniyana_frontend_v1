@@ -1,4 +1,6 @@
+import { useEffect } from 'react'
 import { Provider } from 'react-redux'
+import { HelmetProvider } from 'react-helmet-async'
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'motion/react'
 import { store } from './store'
@@ -7,6 +9,7 @@ import { Footer } from './components/footer'
 import ScrollToTop from './components/ScrollToTop'
 import { pageFade } from './components/motion/presets'
 import { appRoutes } from './pages'
+import AdminRouteTree from './admin/adminRoutes'
 
 function AnimatedRoutes() {
   const location = useLocation()
@@ -30,21 +33,51 @@ function AnimatedRoutes() {
   )
 }
 
-export default function App() {
+function AppShell() {
+  const { pathname } = useLocation()
+  const isAdmin = pathname.startsWith('/admin')
+
+  if (isAdmin) {
+    return <AdminRouteTree />
+  }
+
   return (
-    <Provider store={store}>
-      <BrowserRouter>
-        <ScrollToTop />
-        <div className="min-h-screen bg-white">
-          <Header />
-          <main className="overflow-visible">
-            <AnimatedRoutes />
-          </main>
-          <Footer />
-          {/* Clears fixed mobile bottom nav — must stay AFTER page content */}
-          <div className="h-16 sm:hidden" aria-hidden="true" />
-        </div>
-      </BrowserRouter>
-    </Provider>
+    <div className="min-h-screen bg-white">
+      <Header />
+      <main className="overflow-visible">
+        <AnimatedRoutes />
+      </main>
+      <Footer />
+      <div className="h-16 sm:hidden" aria-hidden="true" />
+    </div>
+  )
+}
+
+/**
+ * index.html ships static title/meta/OG tags as a fallback for crawlers that
+ * never run JS. react-helmet-async can't see or replace them (it only tracks
+ * tags it rendered itself), so once React mounts and Seo takes over per
+ * route, drop the static ones — otherwise both sets sit in <head> at once
+ * and anything reading the DOM (including our own scrapers) may pick the
+ * stale static tag instead of the page-specific one.
+ */
+function useDropStaticSeoFallback() {
+  useEffect(() => {
+    document.querySelectorAll('[data-static-seo]').forEach((el) => el.remove())
+  }, [])
+}
+
+export default function App() {
+  useDropStaticSeoFallback()
+
+  return (
+    <HelmetProvider>
+      <Provider store={store}>
+        <BrowserRouter>
+          <ScrollToTop />
+          <AppShell />
+        </BrowserRouter>
+      </Provider>
+    </HelmetProvider>
   )
 }

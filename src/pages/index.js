@@ -1,7 +1,7 @@
 import FlashBackPage, { FlashBackDetailPage } from './flash-back'
 import RemembrancePage, { RemembranceDetailPage } from './remembrance'
 import InfoSpecialPage, { InfoSpecialDetailPage } from './info-special'
-import VideoPage from './video'
+import VideoPage, { VideoDetailPage } from './video'
 import PosterPage from './poster'
 import PhotoStoryPage, { PhotoStoryDetailPage } from './photo-story'
 import OffTheCameraPage, { OffTheCameraDetailPage } from './off-the-camera'
@@ -9,6 +9,7 @@ import ArticlePage, { ArticleDetailPage } from './article'
 import FilmTodayPage, { FilmTodayDetailPage } from './film-today'
 import HomePage from './home'
 import ContactUsPage from './contact-us'
+import NotFoundPage from './not-found'
 
 /**
  * Route table — one folder per menu for maintainability.
@@ -24,6 +25,7 @@ export const appRoutes = [
   { path: '/info-special', element: InfoSpecialPage },
   { path: '/info-special/:slug', element: InfoSpecialDetailPage },
   { path: '/video', element: VideoPage },
+  { path: '/video/:slug', element: VideoDetailPage },
   { path: '/poster', element: PosterPage },
   { path: '/photo-story', element: PhotoStoryPage },
   { path: '/photo-story/:slug', element: PhotoStoryDetailPage },
@@ -35,4 +37,5 @@ export const appRoutes = [
   { path: '/film-today/:slug', element: FilmTodayDetailPage },
   { path: '/about-us', element: ContactUsPage },
   { path: '/contact-us', element: ContactUsPage },
+  { path: '*', element: NotFoundPage },
 ]

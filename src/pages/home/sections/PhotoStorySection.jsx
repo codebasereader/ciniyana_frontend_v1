@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 import { FadeIn } from '../../../components/motion'
 import { selectLanguage } from '../../../store/slices/languageSlice'
 import { photoStoryData } from '../../photo-story/data'
-import { photoStoryPosts } from '../../photo-story/posts'
+import { usePhotoStoryPosts } from '../../photo-story/usePhotoStoryPosts'
 import { excerpt, pickLang } from '../utils'
 import { HomePostCard, SectionDivider } from './SectionBits'
 
@@ -12,6 +12,7 @@ const BG = '#E8B84A'
 export default function PhotoStorySection() {
   const language = useSelector(selectLanguage)
   const logo = language === 'en' ? photoStoryData.logos.en : photoStoryData.logos.kn
+  const { posts: photoStoryPosts } = usePhotoStoryPosts()
   const posts = photoStoryPosts.slice(0, 3)
 
   return (

@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import KnockoutLogo from '../ui/KnockoutLogo'
-import { LOGO_PATHS, TAGLINE } from '../../data/menus'
+import { LOGO_PATHS /* , TAGLINE */ } from '../../data/menus'
 import { selectLanguage } from '../../store/slices/languageSlice'
 
 /**
@@ -24,9 +24,9 @@ export default function BrandLogo({ variant = 'desktop' }) {
             className="h-[5.5rem] w-full drop-shadow-[0_1px_4px_rgba(0,0,0,0.35)]"
           />
         </Link>
-        <p className="-mt-3 w-[13.25rem] max-w-full self-start text-right text-[9px] font-semibold leading-tight text-white">
+        {/* <p className="-mt-3 w-[13.25rem] max-w-full self-start text-right text-[9px] font-semibold leading-tight text-white">
           {language === 'kn' ? TAGLINE.kn : TAGLINE.en}
-        </p>
+        </p> */}
       </div>
     )
   }
@@ -44,9 +44,9 @@ export default function BrandLogo({ variant = 'desktop' }) {
         />
       </Link>
 
-      <p className="-mt-1.5 w-full self-end pr-3 text-right text-xs font-semibold leading-snug text-[#EBC999] sm:-mt-2 sm:pr-5 sm:text-[13px] md:pr-6 md:text-sm lg:pr-8 lg:text-[15px]">
+      {/* <p className="-mt-1.5 w-full self-end pr-3 text-right text-xs font-semibold leading-snug text-[#EBC999] sm:-mt-2 sm:pr-5 sm:text-[13px] md:pr-6 md:text-sm lg:pr-8 lg:text-[15px]">
         {language === 'kn' ? TAGLINE.kn : TAGLINE.en}
-      </p>
+      </p> */}
     </div>
   )
 }

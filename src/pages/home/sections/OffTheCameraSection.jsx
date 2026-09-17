@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 import { FadeIn } from '../../../components/motion'
 import { selectLanguage } from '../../../store/slices/languageSlice'
 import { offTheCameraData } from '../../off-the-camera/data'
-import { offTheCameraPosts } from '../../off-the-camera/posts'
+import { useOffTheCameraPosts } from '../../off-the-camera/useOffTheCameraPosts'
 import { excerpt, pickLang } from '../utils'
 import { HomePostCard, SectionDivider } from './SectionBits'
 
@@ -13,6 +13,7 @@ export default function OffTheCameraSection() {
   const language = useSelector(selectLanguage)
   const logo =
     language === 'en' ? offTheCameraData.logos.en : offTheCameraData.logos.kn
+  const { posts: offTheCameraPosts } = useOffTheCameraPosts()
   const posts = offTheCameraPosts.slice(0, 2)
 
   return (

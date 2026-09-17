@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 import { FadeIn } from '../../../components/motion'
 import { selectLanguage } from '../../../store/slices/languageSlice'
 import { infoSpecialData } from '../../info-special/data'
-import { infoSpecialPosts } from '../../info-special/posts'
+import { useInfoSpecialPosts } from '../../info-special/useInfoSpecialPosts'
 import { excerpt, pickLang } from '../utils'
 import { HomePostCard, SectionDivider } from './SectionBits'
 
@@ -17,6 +17,7 @@ const BLURB = {
 export default function InfoSpecialSection() {
   const language = useSelector(selectLanguage)
   const logo = language === 'en' ? infoSpecialData.logos.en : infoSpecialData.logos.kn
+  const { posts: infoSpecialPosts } = useInfoSpecialPosts()
   const posts = infoSpecialPosts.slice(0, 3)
 
   return (

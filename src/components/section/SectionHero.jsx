@@ -42,6 +42,8 @@ export default function SectionHero({
                 className={`${LOGO_BOX} select-none drop-shadow-[0_6px_14px_rgba(0,0,0,0.28)]`}
                 draggable={false}
               />
+              {/* Logo image carries the visual title; this gives the page a real text h1. */}
+              <h1 className="sr-only">{alt}</h1>
             </div>
           </div>
 

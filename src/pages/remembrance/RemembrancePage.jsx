@@ -1,15 +1,30 @@
 import MenuPageLayout from '../_shared/MenuPageLayout'
 import { PostGrid } from '../../components/posts'
 import { remembranceData } from './data'
-import { remembrancePosts } from './posts'
+import { useRemembrancePosts } from './useRemembrancePosts'
 
 const BASE_PATH = '/remembrance'
 
 export default function RemembrancePage() {
+  const { posts, loading, error, fromApi } = useRemembrancePosts()
+
   return (
     <MenuPageLayout data={remembranceData}>
       <div className="bg-white pt-0 pb-6 sm:pt-2 sm:pb-8">
-        <PostGrid posts={remembrancePosts} basePath={BASE_PATH} />
+        {loading ? (
+          <p className="px-4 py-8 text-center text-sm text-[#666]">Loading…</p>
+        ) : null}
+        {!loading && error && !fromApi ? (
+          <p className="px-4 pb-2 text-center text-xs text-[#999]">
+            Showing saved content (API unavailable)
+          </p>
+        ) : null}
+        {!loading && posts.length === 0 ? (
+          <p className="px-4 py-8 text-center text-sm text-[#666]">No posts yet.</p>
+        ) : null}
+        {!loading && posts.length > 0 ? (
+          <PostGrid posts={posts} basePath={BASE_PATH} />
+        ) : null}
       </div>
     </MenuPageLayout>
   )

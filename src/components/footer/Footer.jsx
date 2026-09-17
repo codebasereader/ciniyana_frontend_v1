@@ -14,10 +14,10 @@ import {
   LOGO_PATHS,
 } from '../../data/menus'
 import KnockoutLogo from '../ui/KnockoutLogo'
-import { flashBackPosts } from '../../pages/flash-back/posts'
-import { filmTodayPosts } from '../../pages/film-today/posts'
-import { remembrancePosts } from '../../pages/remembrance/posts'
-import { articlePosts } from '../../pages/article/posts'
+import { useFlashBackPosts } from '../../pages/flash-back/useFlashBackPosts'
+import { useRemembrancePosts } from '../../pages/remembrance/useRemembrancePosts'
+import { useFilmTodayPosts } from '../../pages/film-today/useFilmTodayPosts'
+import { useArticlePosts } from '../../pages/article/useArticlePosts'
 
 function langText(field, language) {
   if (!field) return ''
@@ -49,7 +49,7 @@ function FooterColumn({ heading, items, basePath, language }) {
                 <div className="h-12 w-12 shrink-0 overflow-hidden bg-[#333]">
                   <img
                     src={post.image}
-                    alt=""
+                    alt={title}
                     className="h-full w-full object-cover transition group-hover:opacity-90"
                     loading="lazy"
                   />
@@ -74,6 +74,10 @@ export default function Footer() {
   const menu = language === 'en' ? ENGLISH_MENU : KANNADA_MENU
   const logoSrc = language === 'en' ? LOGO_PATHS.en : LOGO_PATHS.kn
   const year = new Date().getFullYear()
+  const { posts: flashBackPosts } = useFlashBackPosts()
+  const { posts: remembrancePosts } = useRemembrancePosts()
+  const { posts: filmTodayPosts } = useFilmTodayPosts()
+  const { posts: articlePosts } = useArticlePosts()
 
   const about =
     language === 'kn'

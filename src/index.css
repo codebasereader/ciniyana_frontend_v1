@@ -50,6 +50,14 @@
       filter 0.35s ease;
   }
 
+  /*
+    Native file controls ignore clip/sr-only and can paint a full-width white bar.
+    Labels with htmlFor still open the picker.
+  */
+  input[type='file'] {
+    display: none !important;
+  }
+
   /* Hide scrollbar on nav overflow while keeping scroll */
   .scrollbar-none {
     scrollbar-width: none;

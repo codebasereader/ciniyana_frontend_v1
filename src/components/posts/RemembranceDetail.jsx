@@ -11,15 +11,20 @@ import {
 import { FaXTwitter } from 'react-icons/fa6'
 import KnockoutLogo from '../ui/KnockoutLogo'
 import GalleryCarousel from './GalleryCarousel'
+import { Seo } from '../seo'
 import { selectLanguage } from '../../store/slices/languageSlice'
 import { ENGLISH_MENU, KANNADA_MENU } from '../../data/menus'
+import { toExcerpt } from '../../lib/text'
+import { toAbsoluteUrl } from '../../lib/url'
+import { SITE_NAME } from '../../constants/site'
 
 const DEFAULT_ACCENT = '#ff502f'
 
 /**
  * Signature section detail — matches chithrapatha-style reference:
- * left accent panel (logo + title + share) · right overlapping hero image.
- * Body text always starts fully below the hero (never under the image).
+ * left accent panel (logo + title + share) · photo overlapping its bottom-right.
+ * Title bar is on top; the image sits in flow and is pulled up over the panel.
+ * Body/profile/related always start in the section below (never under the photo).
  *
  * Shared by remembrance, info-special, photo-story, off-the-camera,
  * article, film-today. (Flash Back keeps its own PostDetail layout.)
@@ -83,8 +88,36 @@ export default function RemembranceDetail({
       }))
     : []
 
+  const seoDescription = subtitle || toExcerpt(body)
+  const seoImage = toAbsoluteUrl(post.image)
+  const seoPath = `${basePath}/${post.slug}`
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: title,
+    description: seoDescription,
+    image: seoImage ? [seoImage] : undefined,
+    author: profile?.name
+      ? {
+          '@type': 'Person',
+          name: (language === 'en' ? profile.name.en : profile.name.kn) || undefined,
+        }
+      : { '@type': 'Organization', name: SITE_NAME },
+    publisher: { '@type': 'Organization', name: SITE_NAME },
+    ...(post.date ? { datePublished: post.date } : {}),
+  }
+
   return (
     <article className="w-full bg-[#faf7f2]">
+      <Seo
+        title={title}
+        description={seoDescription}
+        image={seoImage}
+        path={seoPath}
+        type="article"
+        publishedTime={post.date || undefined}
+        jsonLd={jsonLd}
+      />
       {/* ========== HERO (self-contained; body starts after this) ========== */}
       <div className="relative w-full overflow-x-clip bg-[#faf7f2]">
         {isBanner ? (
@@ -107,17 +140,18 @@ export default function RemembranceDetail({
           </div>
         ) : (
           /*
-            Left accent first at the top. Image absolute on the right,
-            overlapping lower — same as before, just slightly higher.
-            Hero padding clears the hanging image; body ~10px below.
+            Part 1 — title panel on top-left, photo overlapping its bottom-right.
+            Both sit in the same grid row (explicit placement) so the photo
+            can overlap without pushing the title to a second row. Image top
+            aligns with the title line (slightly above). Short titles stay
+            one line; long ones wrap before the photo.
           */
-          <div className="relative md:pb-[clamp(3.5rem,14vw,9rem)]">
-            {/* Left accent panel — first / top */}
+          <div className="relative grid grid-cols-1 items-start md:grid-cols-12">
             <div
-              className="relative z-10 w-full px-3 py-5 sm:px-4 sm:py-6 md:w-[58%] md:px-4 md:py-6 lg:w-[55%] lg:px-5 lg:py-7"
+              className="relative z-10 w-full px-3 py-5 sm:px-4 sm:py-6 md:col-span-7 md:col-start-1 md:row-start-1 md:self-start md:px-4 md:py-6 lg:px-5 lg:py-7"
               style={{ backgroundColor: accent }}
             >
-              <div className="relative z-20 w-full max-w-[22rem] sm:max-w-[24rem] md:max-w-[22rem] lg:max-w-[26rem] xl:max-w-[30rem]">
+              <div className="relative z-20 w-full max-w-[26rem] sm:max-w-[28rem] md:max-w-none md:pr-[30%] lg:pr-[28%]">
                 <HeroCopy
                   sectionLogo={sectionLogo}
                   sectionLabel={sectionLabel}
@@ -131,9 +165,8 @@ export default function RemembranceDetail({
               </div>
             </div>
 
-            {/* Right image — same placement as before, nudged slightly up */}
             <div
-              className={`relative z-20 mx-auto mt-[-1.25rem] w-[min(100%-2rem,28rem)] px-0 pb-5 sm:mt-[-1.5rem] sm:w-[min(100%-2rem,30rem)] md:absolute md:left-[40%] md:right-8 md:top-20 md:mx-0 md:mt-0 md:w-auto md:max-w-[34rem] md:pb-0 lg:left-[42%] lg:right-10 lg:top-24 xl:left-[44%] xl:right-12 ${
+              className={`relative z-20 mx-auto mt-[-1.5rem] w-[min(100%-2rem,28rem)] pb-5 sm:mt-[-1.75rem] sm:w-[min(100%-2rem,30rem)] md:col-span-7 md:col-start-6 md:row-start-1 md:mx-0 md:mt-24 md:w-auto md:max-w-[34rem] md:self-start md:pb-5 md:pr-8 lg:mt-28 lg:pr-10 xl:pr-12 ${
                 isPoster ? 'md:max-w-[20rem] lg:max-w-[22rem]' : ''
               }`}
             >
@@ -153,10 +186,10 @@ export default function RemembranceDetail({
         )}
       </div>
 
-      {/* ========== BODY — ~10px below hero/image ========== */}
-      <div className="mx-auto grid w-full max-w-6xl gap-8 px-4 pt-[10px] pb-8 sm:px-6 lg:grid-cols-[1.7fr_1fr] lg:gap-10 lg:px-8 lg:pb-10">
+      {/* ========== Part 2 — profile, body, related: always below the image ========== */}
+      <div className="mx-auto grid w-full max-w-6xl items-start gap-8 px-4 pt-4 pb-8 sm:px-6 sm:pt-5 lg:grid-cols-[1.7fr_1fr] lg:gap-10 lg:px-8 lg:pt-6 lg:pb-10">
         <div className="min-w-0">
-          {profile ? (
+          {isProfileVisible(profile, language) ? (
             <ProfileCard profile={profile} language={language} fallbackImage={post.image} />
           ) : null}
 
@@ -245,8 +278,9 @@ export default function RemembranceDetail({
                     <Link to={`${basePath}/${item.slug}`} className="group block">
                       <img
                         src={item.image}
-                        alt=""
+                        alt={language === 'en' ? item.title.en : item.title.kn}
                         className="mb-2 aspect-video w-full object-cover"
+                        loading="lazy"
                       />
                       <span
                         className="text-sm font-semibold group-hover:underline"
@@ -277,8 +311,9 @@ export default function RemembranceDetail({
                       >
                         <img
                           src={item.image}
-                          alt=""
+                          alt={language === 'en' ? item.title.en : item.title.kn}
                           className="h-16 w-16 shrink-0 object-cover"
+                          loading="lazy"
                         />
                         <span className="text-sm font-semibold leading-snug text-[#222]">
                           {language === 'en' ? item.title.en : item.title.kn}
@@ -382,7 +417,7 @@ function HeroCopy({
         {language === 'en' ? 'View all' : 'ಎಲ್ಲವನ್ನೂ ನೋಡಿ'}
       </Link>
 
-      <h1 className="max-w-full font-['Baloo_Tamma_2'] text-xl font-extrabold leading-snug text-white break-keep sm:text-[1.45rem] md:text-[1.55rem] lg:text-[1.65rem]">
+      <h1 className="max-w-full font-['Baloo_Tamma_2'] text-xl font-extrabold leading-snug text-white break-words sm:text-[1.45rem] md:text-[1.55rem] lg:text-[1.65rem]">
         {title}
       </h1>
       {subtitle ? (
@@ -451,6 +486,13 @@ function ShareButton({ href, className, label, children }) {
  * Contributor strip — circular photo + name/role, intro text vertically centered.
  * Used on info-special, off-the-camera, and article posts that define `profile`.
  */
+function isProfileVisible(profile, language) {
+  if (!profile) return false
+  const name = language === 'en' ? profile.name?.en : profile.name?.kn
+  const intro = language === 'en' ? profile.intro?.en : profile.intro?.kn
+  return Boolean(name || intro)
+}
+
 function ProfileCard({ profile, language, fallbackImage }) {
   const name = language === 'en' ? profile.name?.en : profile.name?.kn
   const role = language === 'en' ? profile.role?.en : profile.role?.kn
@@ -514,12 +556,17 @@ function filterBodyParagraphs(paragraphs, profile, language) {
   })
 }
 
-/** Spread gallery images evenly between body paragraphs. */
+/** Spread gallery images evenly, or pin them after chosen paragraphs. */
 function interleaveParagraphsAndImages(paragraphs, gallery) {
   const n = paragraphs.length
   const k = gallery.length
   if (!k) return paragraphs.map((text) => ({ type: 'p', text }))
   if (!n) return gallery.map((item) => ({ type: 'img', item }))
+
+  const hasPlacement = gallery.some((item) => Number.isFinite(Number(item.afterParagraph)))
+  if (hasPlacement) {
+    return placeImagesAfterParagraphs(paragraphs, gallery)
+  }
 
   const blocks = []
   const chunkSize = n / (k + 1)
@@ -537,6 +584,29 @@ function interleaveParagraphsAndImages(paragraphs, gallery) {
   while (paraIdx < n) {
     blocks.push({ type: 'p', text: paragraphs[paraIdx] })
     paraIdx += 1
+  }
+
+  return blocks
+}
+
+/** Insert each image immediately after its afterParagraph index (1-based). */
+function placeImagesAfterParagraphs(paragraphs, gallery) {
+  const n = paragraphs.length
+  const buckets = Array.from({ length: n + 1 }, () => [])
+
+  gallery.forEach((item) => {
+    let idx = Number(item.afterParagraph)
+    if (!Number.isFinite(idx) || idx < 1) idx = n
+    if (idx > n) idx = n
+    buckets[idx].push(item)
+  })
+
+  const blocks = []
+  for (let i = 0; i < n; i += 1) {
+    blocks.push({ type: 'p', text: paragraphs[i] })
+    buckets[i + 1].forEach((item) => {
+      blocks.push({ type: 'img', item })
+    })
   }
 
   return blocks

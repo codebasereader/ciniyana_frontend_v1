@@ -4,9 +4,9 @@ import { useSelector } from 'react-redux'
 import { selectLanguage } from '../../../store/slices/languageSlice'
 import { CREAM_MINT_STRIPE } from '../../../components/section/sectionThemes'
 import { flashBackData } from '../../flash-back/data'
-import { flashBackPosts } from '../../flash-back/posts'
+import { useFlashBackPosts } from '../../flash-back/useFlashBackPosts'
 import { filmTodayData } from '../../film-today/data'
-import { filmTodayPosts } from '../../film-today/posts'
+import { useFilmTodayPosts } from '../../film-today/useFilmTodayPosts'
 import { excerpt, pickLang } from '../utils'
 import { useAutoCarousel } from '../useAutoCarousel'
 
@@ -14,6 +14,8 @@ export default function HeroSection() {
   const language = useSelector(selectLanguage)
   const [fbPaused, setFbPaused] = useState(false)
   const [ctPaused, setCtPaused] = useState(false)
+  const { posts: flashBackPosts } = useFlashBackPosts()
+  const { posts: filmTodayPosts } = useFilmTodayPosts()
 
   const [fbIndex, setFbIndex] = useAutoCarousel(flashBackPosts.length, {
     intervalMs: 5000,
@@ -60,26 +62,32 @@ export default function HeroSection() {
                 />
               </Link>
 
-              <Link
-                to={`/flash-back/${fbPost.slug}`}
-                className="group relative block overflow-hidden rounded-xl bg-[#ece8e1] shadow-[0_8px_28px_rgba(0,0,0,0.12)] sm:rounded-2xl"
-              >
-                <img
-                  src={fbPost.image}
-                  alt={pickLang(fbPost.title, language)}
-                  className="aspect-[16/10] w-full object-cover grayscale sm:aspect-[16/9]"
-                  draggable={false}
-                />
-              </Link>
+              {fbPost ? (
+                <Link
+                  to={`/flash-back/${fbPost.slug}`}
+                  className="group relative block overflow-hidden rounded-xl bg-[#ece8e1] shadow-[0_8px_28px_rgba(0,0,0,0.12)] sm:rounded-2xl"
+                >
+                  <img
+                    src={fbPost.image}
+                    alt={pickLang(fbPost.title, language)}
+                    className="aspect-[16/10] w-full object-cover grayscale sm:aspect-[16/9]"
+                    draggable={false}
+                  />
+                </Link>
+              ) : (
+                <div className="aspect-[16/10] rounded-xl bg-[#ece8e1] sm:aspect-[16/9] sm:rounded-2xl" />
+              )}
             </div>
           </div>
 
           <div className="mt-2 text-center sm:mt-5">
-            <Link to={`/flash-back/${fbPost.slug}`} className="group block">
-              <h2 className="font-['Baloo_Tamma_2'] text-[15px] font-bold leading-snug text-[#2f7a5c] group-hover:text-[#ac222b] sm:text-lg">
-                {pickLang(fbPost.title, language)}
-              </h2>
-            </Link>
+            {fbPost ? (
+              <Link to={`/flash-back/${fbPost.slug}`} className="group block">
+                <h2 className="font-['Baloo_Tamma_2'] text-[15px] font-bold leading-snug text-[#2f7a5c] group-hover:text-[#ac222b] sm:text-lg">
+                  {pickLang(fbPost.title, language)}
+                </h2>
+              </Link>
+            ) : null}
 
             {flashBackPosts.length > 1 ? (
               <div className="mt-1.5 flex items-center justify-center gap-2 sm:mt-2.5">
@@ -157,27 +165,33 @@ export default function HeroSection() {
             />
           </div>
 
-          <Link
-            to={`/film-today/${ctPost.slug}`}
-            className="group relative mx-auto block w-full max-w-full overflow-hidden rounded-lg bg-[#ece8e1] shadow-[0_8px_24px_rgba(0,0,0,0.1)] sm:max-w-[92%]"
-          >
-            <img
-              src={ctPost.image}
-              alt={pickLang(ctPost.title, language)}
-              className="aspect-[16/10] w-full object-cover sm:aspect-[16/9]"
-              draggable={false}
-            />
-          </Link>
+          {ctPost ? (
+            <Link
+              to={`/film-today/${ctPost.slug}`}
+              className="group relative mx-auto block w-full max-w-full overflow-hidden rounded-lg bg-[#ece8e1] shadow-[0_8px_24px_rgba(0,0,0,0.1)] sm:max-w-[92%]"
+            >
+              <img
+                src={ctPost.image}
+                alt={pickLang(ctPost.title, language)}
+                className="aspect-[16/10] w-full object-cover sm:aspect-[16/9]"
+                draggable={false}
+              />
+            </Link>
+          ) : (
+            <div className="mx-auto aspect-[16/10] w-full max-w-full rounded-lg bg-[#ece8e1] sm:aspect-[16/9] sm:max-w-[92%]" />
+          )}
 
           <div className="mt-3 flex flex-1 flex-col sm:mt-3.5">
-            <Link to={`/film-today/${ctPost.slug}`} className="group block">
-              <h3 className="font-['Baloo_Tamma_2'] text-[15px] font-extrabold leading-snug text-[#1a1a1a] group-hover:text-[#c2185b] sm:text-base">
-                {pickLang(ctPost.title, language)}
-              </h3>
-              <p className="mt-1.5 text-[13px] leading-relaxed text-[#555] line-clamp-2 sm:text-sm">
-                {excerpt(pickLang(ctPost.body, language), 100)}
-              </p>
-            </Link>
+            {ctPost ? (
+              <Link to={`/film-today/${ctPost.slug}`} className="group block">
+                <h3 className="font-['Baloo_Tamma_2'] text-[15px] font-extrabold leading-snug text-[#1a1a1a] group-hover:text-[#c2185b] sm:text-base">
+                  {pickLang(ctPost.title, language)}
+                </h3>
+                <p className="mt-1.5 text-[13px] leading-relaxed text-[#555] line-clamp-2 sm:text-sm">
+                  {excerpt(pickLang(ctPost.body, language), 100)}
+                </p>
+              </Link>
+            ) : null}
 
             {filmTodayPosts.length > 1 ? (
               <div className="mt-auto flex items-center justify-center gap-2 pt-4">

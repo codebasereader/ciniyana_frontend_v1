@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 import { FadeIn } from '../../../components/motion'
 import { selectLanguage } from '../../../store/slices/languageSlice'
 import { articleData } from '../../article/data'
-import { articlePosts } from '../../article/posts'
+import { useArticlePosts } from '../../article/useArticlePosts'
 import { excerpt, pickLang } from '../utils'
 import { HomePostCard, SectionDivider } from './SectionBits'
 
@@ -12,6 +12,7 @@ const BG = '#FCE4EC'
 export default function ArticleSection() {
   const language = useSelector(selectLanguage)
   const logo = language === 'en' ? articleData.logos.en : articleData.logos.kn
+  const { posts: articlePosts } = useArticlePosts()
   const posts = articlePosts.slice(0, 2)
 
   return (

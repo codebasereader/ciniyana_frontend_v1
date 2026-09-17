@@ -1,6 +1,8 @@
 import { useSelector } from 'react-redux'
 import { FadeIn } from '../../components/motion'
+import { Seo } from '../../components/seo'
 import { selectLanguage } from '../../store/slices/languageSlice'
+import { toExcerpt } from '../../lib/text'
 import {
   academyContact,
   chairman,
@@ -130,6 +132,11 @@ export default function ContactUsPage() {
 
   return (
     <div className="w-full" style={{ backgroundColor: PEACH }}>
+      <Seo
+        title={pick(contactUsCopy.pageTitle, language)}
+        description={toExcerpt(aboutParagraphs.join('\n'))}
+      />
+      <h1 className="sr-only">{pick(contactUsCopy.pageTitle, language)}</h1>
       {/* Leadership — peach band */}
       <section className="w-full" style={{ backgroundColor: PEACH }}>
         <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10 md:py-12">

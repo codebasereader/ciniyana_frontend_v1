@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 import { FadeIn } from '../../../components/motion'
 import { selectLanguage } from '../../../store/slices/languageSlice'
 import { remembranceData } from '../../remembrance/data'
-import { remembrancePosts } from '../../remembrance/posts'
+import { useRemembrancePosts } from '../../remembrance/useRemembrancePosts'
 import { excerpt, pickLang } from '../utils'
 
 const BG = '#ff502f'
@@ -16,6 +16,7 @@ const BLURB = {
 export default function RemembranceSection() {
   const language = useSelector(selectLanguage)
   const logo = language === 'en' ? remembranceData.logos.en : remembranceData.logos.kn
+  const { posts: remembrancePosts } = useRemembrancePosts()
   const posts = remembrancePosts.slice(0, 3)
 
   return (
