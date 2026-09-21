@@ -1,10 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { isAccessTokenExpired } from '../../api/token'
+import { API_BASE_URL } from '../../../config.js'
 
 const KEYS = {
-  accessToken: 'accessToken',
-  refreshToken: 'refreshToken',
   user: 'user',
+  accessTokenExpiresAt: 'accessTokenExpiresAt',
 }
 
 function readStoredUser() {
@@ -15,55 +14,79 @@ function readStoredUser() {
   }
 }
 
-function persistSession({ accessToken, refreshToken, user }) {
-  localStorage.setItem(KEYS.accessToken, accessToken)
-  localStorage.setItem(KEYS.refreshToken, refreshToken)
-  localStorage.setItem(KEYS.user, JSON.stringify(user))
+function readStoredExpiry() {
+  const raw = localStorage.getItem(KEYS.accessTokenExpiresAt)
+  const parsed = raw ? Number(raw) : null
+  return Number.isFinite(parsed) ? parsed : null
 }
 
 export function clearAuthStorage() {
-  localStorage.removeItem(KEYS.accessToken)
-  localStorage.removeItem(KEYS.refreshToken)
   localStorage.removeItem(KEYS.user)
+  localStorage.removeItem(KEYS.accessTokenExpiresAt)
 }
 
-function readInitialSession() {
-  const accessToken = localStorage.getItem(KEYS.accessToken)
-  const refreshToken = localStorage.getItem(KEYS.refreshToken)
-  const user = readStoredUser()
-
-  if (!accessToken || isAccessTokenExpired(accessToken)) {
-    clearAuthStorage()
-    return { accessToken: null, refreshToken: null, user: null }
+function persistSession({ user, accessTokenExpiresAt }) {
+  localStorage.setItem(KEYS.user, JSON.stringify(user))
+  if (accessTokenExpiresAt != null) {
+    localStorage.setItem(KEYS.accessTokenExpiresAt, String(accessTokenExpiresAt))
   }
-
-  return { accessToken, refreshToken, user }
 }
 
-const initialState = readInitialSession()
+// Neither token is stored here — they live in httpOnly cookies set by the
+// server. `user` + `accessTokenExpiresAt` are just non-sensitive UI hints:
+// "was logged in last time" and "when to next refresh".
+const initialState = {
+  user: readStoredUser(),
+  accessTokenExpiresAt: readStoredExpiry(),
+}
 
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
     loginSuccess(state, action) {
-      const { accessToken, refreshToken, user } = action.payload
-      state.accessToken = accessToken
-      state.refreshToken = refreshToken
+      const { user, accessTokenExpiresAt } = action.payload
       state.user = user
-      persistSession({ accessToken, refreshToken, user })
+      state.accessTokenExpiresAt = accessTokenExpiresAt ?? null
+      persistSession({ user, accessTokenExpiresAt })
+    },
+    sessionRefreshed(state, action) {
+      const { accessTokenExpiresAt } = action.payload
+      state.accessTokenExpiresAt = accessTokenExpiresAt ?? null
+      if (accessTokenExpiresAt != null) {
+        localStorage.setItem(KEYS.accessTokenExpiresAt, String(accessTokenExpiresAt))
+      }
     },
     logout(state) {
-      state.accessToken = null
-      state.refreshToken = null
       state.user = null
+      state.accessTokenExpiresAt = null
       clearAuthStorage()
     },
   },
 })
 
-export const { loginSuccess, logout } = authSlice.actions
+export const { loginSuccess, sessionRefreshed, logout } = authSlice.actions
+
+/**
+ * The real sign-out. The auth cookies are httpOnly, so only the server can
+ * clear them — call sites must dispatch this (not the plain `logout` action
+ * alone) or the browser keeps a live session cookie after the UI "logs out".
+ */
+export function logoutUser() {
+  return async (dispatch) => {
+    try {
+      await fetch(`${API_BASE_URL}/user/logout`, {
+        method: 'POST',
+        credentials: 'include',
+      })
+    } catch {
+      // Best-effort — cookies still expire on their own via maxAge.
+    }
+    dispatch(logout())
+  }
+}
+
 export const selectAuth = (state) => state.auth
-export const selectAccessToken = (state) => state.auth.accessToken
 export const selectUser = (state) => state.auth.user
+export const selectAccessTokenExpiresAt = (state) => state.auth.accessTokenExpiresAt
 export default authSlice.reducer

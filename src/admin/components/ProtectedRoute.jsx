@@ -1,15 +1,18 @@
-import { useEffect } from 'react'
 import { Navigate, Outlet } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
-import { logout, selectAccessToken } from '../../store/slices/authSlice'
-import { isAccessTokenExpired } from '../../api/token'
+import { useSelector } from 'react-redux'
+import { selectUser } from '../../store/slices/authSlice'
 import useSessionExpiry from '../hooks/useSessionExpiry'
 
 export function ProtectedRoute() {
   useSessionExpiry()
-  const accessToken = useSelector(selectAccessToken)
+  const user = useSelector(selectUser)
 
-  if (!accessToken || isAccessTokenExpired(accessToken)) {
+  // The session cookies are httpOnly — we can't read them from JS to check
+  // validity synchronously. `user` (restored from localStorage) is an
+  // optimistic "was logged in" hint; useSessionExpiry validates it for real
+  // via a refresh attempt on mount and logs out (redirecting here) if that
+  // fails, e.g. the refresh token expired while the tab was closed.
+  if (!user) {
     return <Navigate to="/admin/login" replace />
   }
 
@@ -17,16 +20,9 @@ export function ProtectedRoute() {
 }
 
 export function GuestRoute() {
-  const dispatch = useDispatch()
-  const accessToken = useSelector(selectAccessToken)
+  const user = useSelector(selectUser)
 
-  useEffect(() => {
-    if (accessToken && isAccessTokenExpired(accessToken)) {
-      dispatch(logout())
-    }
-  }, [accessToken, dispatch])
-
-  if (accessToken && !isAccessTokenExpired(accessToken)) {
+  if (user) {
     return <Navigate to="/admin" replace />
   }
 

@@ -30,9 +30,8 @@ export default function LoginPage() {
       const data = await login({ email, password })
       dispatch(
         loginSuccess({
-          accessToken: data.accessToken,
-          refreshToken: data.refreshToken,
           user: data.user,
+          accessTokenExpiresAt: data.accessTokenExpiresAt,
         }),
       )
       navigate('/admin', { replace: true })

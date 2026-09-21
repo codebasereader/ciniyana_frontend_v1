@@ -2,7 +2,7 @@ import { NavLink } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import LanguageToggle from '../../components/header/LanguageToggle'
 import { selectLanguage } from '../../store/slices/languageSlice'
-import { logout } from '../../store/slices/authSlice'
+import { logoutUser } from '../../store/slices/authSlice'
 import { LOGO_PATHS } from '../../data/menus'
 import { FaSignOutAlt, getAdminNav } from '../nav'
 
@@ -38,7 +38,7 @@ export default function AdminSidebar() {
       <div className="border-t border-white/15 px-3 py-3">
         <button
           type="button"
-          onClick={() => dispatch(logout())}
+          onClick={() => dispatch(logoutUser())}
           className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold text-white hover:bg-white/10"
         >
           <FaSignOutAlt />

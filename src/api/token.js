@@ -1,39 +1,23 @@
 /**
- * Client-side JWT helpers (expiry only — signature is verified by the API).
+ * Session-expiry helpers.
+ *
+ * The access/refresh tokens live in httpOnly cookies the browser attaches
+ * automatically — client JS never sees the raw JWTs. The server hands back
+ * the access token's expiry as a plain epoch-ms timestamp instead, and
+ * these helpers operate on that number.
  */
 
-function decodeJwtPayload(token) {
-  if (!token || typeof token !== 'string') return null
-  const parts = token.split('.')
-  if (parts.length < 2) return null
+const SKEW_MS = 5_000
 
-  try {
-    const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/')
-    const padded = base64.padEnd(base64.length + ((4 - (base64.length % 4)) % 4), '=')
-    return JSON.parse(atob(padded))
-  } catch {
-    return null
-  }
+/** @param {number|null|undefined} expiresAtMs */
+export function isAccessTokenExpired(expiresAtMs) {
+  if (expiresAtMs == null) return true
+  // Small skew so we refresh slightly before the server would reject.
+  return Date.now() >= expiresAtMs - SKEW_MS
 }
 
-/** @returns {number|null} expiry as epoch ms, or null if unknown */
-export function getAccessTokenExpiryMs(token) {
-  const payload = decodeJwtPayload(token)
-  if (!payload?.exp) return null
-  return Number(payload.exp) * 1000
-}
-
-export function isAccessTokenExpired(token) {
-  if (!token) return true
-  const expiryMs = getAccessTokenExpiryMs(token)
-  if (expiryMs == null) return false
-  // Small skew so we logout slightly before the server rejects
-  return Date.now() >= expiryMs - 5_000
-}
-
-/** ms until expiry (clamped ≥ 0), or null if unknown */
-export function getMsUntilAccessTokenExpiry(token) {
-  const expiryMs = getAccessTokenExpiryMs(token)
-  if (expiryMs == null) return null
-  return Math.max(0, expiryMs - 5_000 - Date.now())
+/** @param {number|null|undefined} expiresAtMs @returns {number|null} ms until expiry (clamped ≥ 0), or null if unknown */
+export function getMsUntilAccessTokenExpiry(expiresAtMs) {
+  if (expiresAtMs == null) return null
+  return Math.max(0, expiresAtMs - SKEW_MS - Date.now())
 }

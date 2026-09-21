@@ -1,49 +1,51 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { refreshAccessToken } from '../../api/client'
 import {
   getMsUntilAccessTokenExpiry,
   isAccessTokenExpired,
 } from '../../api/token'
-import { logout, selectAccessToken } from '../../store/slices/authSlice'
+import { logoutUser, selectAccessTokenExpiresAt, selectUser } from '../../store/slices/authSlice'
 
 /**
- * Logs out when the access JWT expires (timer + tab focus / visibility checks).
- * API 401 responses still clear the session via apiFetch.
+ * Keeps the session alive by silently refreshing the (httpOnly, cookie-held)
+ * access token when it expires (timer + tab focus/visibility checks). Only
+ * logs out when the refresh itself fails, i.e. the refresh token is also
+ * expired/revoked. A successful refresh updates `accessTokenExpiresAt` in
+ * the store, which re-runs this effect and schedules the next refresh.
  */
 export default function useSessionExpiry() {
   const dispatch = useDispatch()
-  const accessToken = useSelector(selectAccessToken)
+  const user = useSelector(selectUser)
+  const accessTokenExpiresAt = useSelector(selectAccessTokenExpiresAt)
 
   useEffect(() => {
-    if (!accessToken) return undefined
+    if (!user) return undefined
+    let cancelled = false
 
-    const expireNow = () => {
-      if (isAccessTokenExpired(accessToken) || isAccessTokenExpired(localStorage.getItem('accessToken'))) {
-        dispatch(logout())
+    const ensureFresh = async () => {
+      if (!isAccessTokenExpired(accessTokenExpiresAt)) return
+      try {
+        await refreshAccessToken()
+      } catch {
+        if (!cancelled) dispatch(logoutUser())
       }
     }
 
-    expireNow()
+    ensureFresh()
 
-    const ms = getMsUntilAccessTokenExpiry(accessToken)
-    let timerId
-    if (ms != null) {
-      timerId = window.setTimeout(() => {
-        dispatch(logout())
-      }, ms)
-    }
+    const ms = getMsUntilAccessTokenExpiry(accessTokenExpiresAt)
+    // Unknown expiry (e.g. just restored from localStorage) — check again shortly.
+    const timerId = window.setTimeout(ensureFresh, ms ?? 30_000)
 
-    const onFocusOrVisible = () => {
-      expireNow()
-    }
-
-    window.addEventListener('focus', onFocusOrVisible)
-    document.addEventListener('visibilitychange', onFocusOrVisible)
+    window.addEventListener('focus', ensureFresh)
+    document.addEventListener('visibilitychange', ensureFresh)
 
     return () => {
-      if (timerId != null) window.clearTimeout(timerId)
-      window.removeEventListener('focus', onFocusOrVisible)
-      document.removeEventListener('visibilitychange', onFocusOrVisible)
+      cancelled = true
+      window.clearTimeout(timerId)
+      window.removeEventListener('focus', ensureFresh)
+      document.removeEventListener('visibilitychange', ensureFresh)
     }
-  }, [accessToken, dispatch])
+  }, [user, accessTokenExpiresAt, dispatch])
 }

@@ -1,10 +1,6 @@
-export { apiFetch, ApiError } from './client'
+export { apiFetch, ApiError, refreshAccessToken } from './client'
 export { login, register } from './auth'
-export {
-  getAccessTokenExpiryMs,
-  isAccessTokenExpired,
-  getMsUntilAccessTokenExpiry,
-} from './token'
+export { isAccessTokenExpired, getMsUntilAccessTokenExpiry } from './token'
 export { resolveMediaUrl, withResolvedImage, withResolvedImages } from './media'
 export {
   fetchFlashBackPosts,

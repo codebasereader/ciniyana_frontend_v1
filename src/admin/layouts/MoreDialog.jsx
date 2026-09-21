@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { selectLanguage } from '../../store/slices/languageSlice'
-import { logout } from '../../store/slices/authSlice'
+import { logoutUser } from '../../store/slices/authSlice'
 import { FaSignOutAlt, getMobileMoreNav } from '../nav'
 
 export default function MoreDialog({ open, onClose }) {
@@ -63,7 +63,7 @@ export default function MoreDialog({ open, onClose }) {
             type="button"
             onClick={() => {
               onClose()
-              dispatch(logout())
+              dispatch(logoutUser())
             }}
             className="mt-2 flex w-full items-center gap-3 rounded-lg px-3 py-3 text-sm font-semibold text-[#ac222b]"
           >
