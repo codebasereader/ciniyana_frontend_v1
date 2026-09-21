@@ -2,6 +2,7 @@ export { apiFetch, ApiError, refreshAccessToken } from './client'
 export { login, register } from './auth'
 export { isAccessTokenExpired, getMsUntilAccessTokenExpiry } from './token'
 export { resolveMediaUrl, withResolvedImage, withResolvedImages } from './media'
+export { fetchPostStats, fetchVisitStats } from './stats'
 export {
   fetchFlashBackPosts,
   fetchFlashBackBySlug,
