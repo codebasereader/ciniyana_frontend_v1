@@ -10,6 +10,7 @@ import ScrollToTop from './components/ScrollToTop'
 import { pageFade } from './components/motion/presets'
 import { appRoutes } from './pages'
 import AdminRouteTree from './admin/adminRoutes'
+import { trackVisitOnce } from './lib/visitTracker'
 
 function AnimatedRoutes() {
   const location = useLocation()
@@ -36,6 +37,10 @@ function AnimatedRoutes() {
 function AppShell() {
   const { pathname } = useLocation()
   const isAdmin = pathname.startsWith('/admin')
+
+  useEffect(() => {
+    if (!isAdmin) trackVisitOnce()
+  }, [isAdmin])
 
   if (isAdmin) {
     return <AdminRouteTree />
