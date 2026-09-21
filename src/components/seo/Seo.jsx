@@ -67,7 +67,11 @@ export default function Seo({
       ) : null}
 
       {jsonLd ? (
-        <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
+        // react-helmet-async injects this string as raw innerHTML (no HTML-escaping),
+        // so a literal "</script>" in CMS content would break out of the tag — escape it.
+        <script type="application/ld+json">
+          {JSON.stringify(jsonLd).replace(/</g, '\\u003c')}
+        </script>
       ) : null}
     </Helmet>
   )
