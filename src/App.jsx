@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, lazy, Suspense } from 'react'
 import { Provider } from 'react-redux'
 import { HelmetProvider } from 'react-helmet-async'
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
@@ -9,7 +9,7 @@ import { Footer } from './components/footer'
 import ScrollToTop from './components/ScrollToTop'
 import { pageFade } from './components/motion/presets'
 import { appRoutes } from './pages'
-import AdminRouteTree from './admin/adminRoutes'
+const AdminRouteTree = lazy(() => import('./admin/adminRoutes').then(mod => ({ default: mod.default })))
 import { trackVisitOnce } from './lib/visitTracker'
 
 function AnimatedRoutes() {
@@ -43,7 +43,11 @@ function AppShell() {
   }, [isAdmin])
 
   if (isAdmin) {
-    return <AdminRouteTree />
+    return (
+      <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading…</div>}>
+        <AdminRouteTree />
+      </Suspense>
+    )
   }
 
   return (
