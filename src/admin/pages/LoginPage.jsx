@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
+import { FaEye, FaEyeSlash } from 'react-icons/fa'
 import { login } from '../../api'
 import { loginSuccess } from '../../store/slices/authSlice'
 import { selectLanguage, setLanguage } from '../../store/slices/languageSlice'
@@ -11,6 +12,7 @@ export default function LoginPage() {
   const language = useSelector(selectLanguage)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
@@ -73,15 +75,33 @@ export default function LoginPage() {
 
           <label className="flex flex-col gap-1.5 text-sm font-semibold text-[#333]">
             {isKn ? 'ಪಾಸ್‌ವರ್ಡ್' : 'Password'}
-            <input
-              type="password"
-              name="password"
-              autoComplete="current-password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="rounded-lg border border-[#ddd] px-3 py-2.5 text-base font-normal text-[#1a1a1a] outline-none focus:border-[#c4782a] focus:ring-2 focus:ring-[#e8a93a]/40"
-            />
+            <span className="relative flex items-center">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                name="password"
+                autoComplete="current-password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full rounded-lg border border-[#ddd] px-3 py-2.5 pr-10 text-base font-normal text-[#1a1a1a] outline-none focus:border-[#c4782a] focus:ring-2 focus:ring-[#e8a93a]/40"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                aria-label={
+                  showPassword
+                    ? isKn
+                      ? 'ಪಾಸ್‌ವರ್ಡ್ ಮರೆಮಾಡಿ'
+                      : 'Hide password'
+                    : isKn
+                      ? 'ಪಾಸ್‌ವರ್ಡ್ ತೋರಿಸಿ'
+                      : 'Show password'
+                }
+                className="absolute right-3 flex items-center text-[#888] hover:text-[#555]"
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </span>
           </label>
 
           {error ? (
