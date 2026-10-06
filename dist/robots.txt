@@ -1,0 +1,6 @@
+# TODO: confirm this matches the real production domain before launch.
+User-agent: *
+Allow: /
+Disallow: /admin
+
+Sitemap: https://www.ciniyaana.com/sitemap.xml

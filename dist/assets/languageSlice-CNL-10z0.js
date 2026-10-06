@@ -1,0 +1,1 @@
+import{f as e}from"./authSlice-WcXoRPnj.js";var t=e({name:`language`,initialState:{language:`kn`},reducers:{setLanguage(e,t){e.language=t.payload},toggleLanguage(e){e.language=e.language===`kn`?`en`:`kn`}}}),{setLanguage:n,toggleLanguage:r}=t.actions,i=e=>e.language.language,a=t.reducer;export{i as n,n as r,a as t};
