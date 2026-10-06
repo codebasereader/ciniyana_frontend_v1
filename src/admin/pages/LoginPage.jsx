@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { FaEye, FaEyeSlash } from 'react-icons/fa'
 import { login } from '../../api'
+import { AUTH_NOTICE_KEY } from '../../api/client'
 import { loginSuccess } from '../../store/slices/authSlice'
 import { selectLanguage, setLanguage } from '../../store/slices/languageSlice'
 
@@ -14,11 +15,24 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
+  const [notice, setNotice] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
     dispatch(setLanguage('en'))
   }, [dispatch])
+
+  // One-time message when a newer login on another device ended this session.
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem(AUTH_NOTICE_KEY) === 'SESSION_REPLACED') {
+        sessionStorage.removeItem(AUTH_NOTICE_KEY)
+        setNotice('You were signed out because this account signed in on another device or browser.')
+      }
+    } catch {
+      // Storage unavailable — nothing to show.
+    }
+  }, [])
 
   const isKn = language === 'kn'
   const logoSrc = isKn ? '/logo/logo_kn.png' : '/logo/logo_en.png'
@@ -58,6 +72,15 @@ export default function LoginPage() {
               : 'Sign in with your email and password'}
           </p>
         </div>
+
+        {notice ? (
+          <p
+            className="mb-4 rounded-lg bg-[#fff6e5] px-3 py-2 text-sm font-medium text-[#8a5a12]"
+            role="status"
+          >
+            {notice}
+          </p>
+        ) : null}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <label className="flex flex-col gap-1.5 text-sm font-semibold text-[#333]">

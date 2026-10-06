@@ -1,5 +1,6 @@
-import { useId } from 'react'
+import { useId, useState } from 'react'
 import { FaPlus, FaTrash, FaArrowUp, FaArrowDown } from 'react-icons/fa'
+import { validateImageFile } from '../../../../lib/imageFile'
 
 const inputClass =
   'w-full min-w-0 rounded-lg border border-[#ddd] px-3 py-2 text-sm font-normal text-[#1a1a1a] outline-none focus:border-[#c4782a] focus:ring-2 focus:ring-[#e8a93a]/40'
@@ -18,6 +19,7 @@ function previewLabel(text, max = 64) {
  */
 export default function GalleryEditor({ items = [], onChange, paragraphPlacement = null }) {
   const inputId = useId()
+  const [fileError, setFileError] = useState('')
   const paragraphCount = paragraphPlacement?.count || 0
   const showPlacement = Boolean(paragraphPlacement)
 
@@ -40,7 +42,10 @@ export default function GalleryEditor({ items = [], onChange, paragraphPlacement
   }
 
   const addFiles = (fileList) => {
-    const files = Array.from(fileList || [])
+    const picked = Array.from(fileList || [])
+    const problems = picked.map(validateImageFile).filter(Boolean)
+    setFileError(problems.join(' '))
+    const files = picked.filter((file) => !validateImageFile(file))
     if (!files.length) return
     const added = files.map((file, i) => ({
       key: `new-${Date.now()}-${i}-${file.name}`,
@@ -78,6 +83,12 @@ export default function GalleryEditor({ items = [], onChange, paragraphPlacement
           }}
         />
       </div>
+
+      {fileError ? (
+        <p className="text-sm font-medium text-[#ac222b]" role="alert">
+          {fileError}
+        </p>
+      ) : null}
 
       {items.length === 0 ? (
         <p className="rounded-lg border border-dashed border-[#ccc] bg-[#faf8f5] px-3 py-6 text-center text-sm text-[#888]">

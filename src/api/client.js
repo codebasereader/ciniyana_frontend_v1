@@ -2,10 +2,24 @@ import { API_BASE_URL } from '../../config.js'
 import { isAccessTokenExpired } from './token.js'
 
 export class ApiError extends Error {
-  constructor(message, status) {
+  constructor(message, status, code) {
     super(message)
     this.name = 'ApiError'
     this.status = status
+    this.code = code
+  }
+}
+
+export const AUTH_NOTICE_KEY = 'authNotice'
+
+// The backend allows one active session per account; when a newer login
+// replaces this one, tell the user why they landed on the login page.
+function rememberSessionReplaced(code) {
+  if (code !== 'SESSION_REPLACED') return
+  try {
+    sessionStorage.setItem(AUTH_NOTICE_KEY, 'SESSION_REPLACED')
+  } catch {
+    // Storage unavailable — the plain login page is still correct.
   }
 }
 
@@ -43,7 +57,7 @@ export function refreshAccessToken() {
         headers: { 'Content-Type': 'application/json' },
       })
       const data = await res.json().catch(() => ({}))
-      if (!res.ok) throw new ApiError(data.message || 'Session expired', res.status)
+      if (!res.ok) throw new ApiError(data.message || 'Session expired', res.status, data.code)
 
       await persistRefreshedSession(data.accessTokenExpiresAt ?? null)
       return data.accessTokenExpiresAt
@@ -73,9 +87,10 @@ export async function apiFetch(path, options = {}) {
   if (!skipAuth && isAccessTokenExpired(await getKnownExpiry())) {
     try {
       await refreshAccessToken()
-    } catch {
+    } catch (err) {
+      rememberSessionReplaced(err?.code)
       await forceLogout()
-      throw new ApiError('Session expired', 401)
+      throw new ApiError('Session expired', 401, err?.code)
     }
   }
 
@@ -94,23 +109,28 @@ export async function apiFetch(path, options = {}) {
   // Server rejected the access token despite it looking valid client-side
   // (revoked, clock skew, etc). Refresh once and retry before giving up.
   if (res.status === 401 && !skipAuth) {
+    const replacedCode = data.code
     try {
       await refreshAccessToken()
-    } catch {
+    } catch (err) {
+      rememberSessionReplaced(replacedCode || err?.code)
       await forceLogout()
-      throw new ApiError(data.message || 'Unauthorized', 401)
+      throw new ApiError(data.message || 'Unauthorized', 401, replacedCode || err?.code)
     }
     res = await doFetch()
     data = await res.json().catch(() => ({}))
   }
 
   if (res.status === 401) {
-    if (!skipAuth) await forceLogout()
-    throw new ApiError(data.message || 'Unauthorized', 401)
+    if (!skipAuth) {
+      rememberSessionReplaced(data.code)
+      await forceLogout()
+    }
+    throw new ApiError(data.message || 'Unauthorized', 401, data.code)
   }
 
   if (!res.ok) {
-    throw new ApiError(data.message || 'Request failed', res.status)
+    throw new ApiError(data.message || 'Request failed', res.status, data.code)
   }
 
   return data

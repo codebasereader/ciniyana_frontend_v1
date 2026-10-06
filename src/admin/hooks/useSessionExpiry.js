@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { refreshAccessToken } from '../../api/client'
+import { AUTH_NOTICE_KEY, refreshAccessToken } from '../../api/client'
 import {
   getMsUntilAccessTokenExpiry,
   isAccessTokenExpired,
@@ -27,7 +27,14 @@ export default function useSessionExpiry() {
       if (!isAccessTokenExpired(accessTokenExpiresAt)) return
       try {
         await refreshAccessToken()
-      } catch {
+      } catch (err) {
+        if (err?.code === 'SESSION_REPLACED') {
+          try {
+            sessionStorage.setItem(AUTH_NOTICE_KEY, 'SESSION_REPLACED')
+          } catch {
+            // Storage unavailable — plain login page is still correct.
+          }
+        }
         if (!cancelled) dispatch(logoutUser())
       }
     }

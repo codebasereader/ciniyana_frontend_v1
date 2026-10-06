@@ -1,4 +1,5 @@
-import { useId } from 'react'
+import { useId, useState } from 'react'
+import { validateImageFile } from '../../../../lib/imageFile'
 
 export default function ImageUploadField({
   label,
@@ -9,6 +10,7 @@ export default function ImageUploadField({
   accept = 'image/jpeg,image/png,image/webp,image/gif',
 }) {
   const inputId = useId()
+  const [fileError, setFileError] = useState('')
 
   return (
     <div className="flex w-full min-w-0 flex-col gap-2">
@@ -42,7 +44,9 @@ export default function ImageUploadField({
           className="hidden"
           onChange={(e) => {
             const file = e.target.files?.[0] || null
-            onFileChange(file)
+            const problem = validateImageFile(file)
+            setFileError(problem || '')
+            if (!problem) onFileChange(file)
             e.target.value = ''
           }}
         />
@@ -57,9 +61,9 @@ export default function ImageUploadField({
         ) : null}
       </div>
 
-      {error ? (
+      {fileError || error ? (
         <p className="text-sm font-medium text-[#ac222b]" role="alert">
-          {error}
+          {fileError || error}
         </p>
       ) : null}
     </div>
