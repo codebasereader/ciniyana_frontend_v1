@@ -1,1 +1,1 @@
-export const API_BASE_URL = "http://172.18.37.78";
+export const API_BASE_URL = "https://www.ciniyaana.karnataka.gov.in/api";

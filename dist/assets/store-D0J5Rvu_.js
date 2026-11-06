@@ -1,0 +1,1 @@
+import{n as e}from"./rolldown-runtime-hePW80VL.js";import{l as t,t as n}from"./authSlice-DRwvo7S2.js";import{t as r}from"./languageSlice-CUSienOM.js";var i=e({store:()=>a}),a=t({reducer:{language:r,auth:n}});export{i as n,a as t};
