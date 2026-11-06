@@ -3,4 +3,4 @@ User-agent: *
 Allow: /
 Disallow: /admin
 
-Sitemap: https://www.ciniyaana.com/sitemap.xml
+Sitemap: https://ciniyaana.karnataka.gov.in/sitemap.xml

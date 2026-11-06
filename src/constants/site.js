@@ -3,7 +3,7 @@
  * every canonical URL, OG/Twitter tag, robots.txt and sitemap.xml entry
  * is built from this value.
  */
-export const SITE_URL = 'https://www.ciniyaana.com'
+export const SITE_URL = 'https://ciniyaana.karnataka.gov.in'
 
 export const SITE_NAME = 'Ciniyaana'
 
