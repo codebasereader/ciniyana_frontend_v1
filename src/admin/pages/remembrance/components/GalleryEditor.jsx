@@ -1,6 +1,6 @@
 import { useId, useState } from 'react'
 import { FaPlus, FaTrash, FaArrowUp, FaArrowDown } from 'react-icons/fa'
-import { validateImageFile } from '../../../../lib/imageFile'
+import { compressToWebp, validateImageFile } from '../../../../lib/imageFile'
 
 const inputClass =
   'w-full min-w-0 rounded-lg border border-[#ddd] px-3 py-2 text-sm font-normal text-[#1a1a1a] outline-none focus:border-[#c4782a] focus:ring-2 focus:ring-[#e8a93a]/40'
@@ -41,11 +41,13 @@ export default function GalleryEditor({ items = [], onChange, paragraphPlacement
     onChange(next)
   }
 
-  const addFiles = (fileList) => {
+  const addFiles = async (fileList) => {
     const picked = Array.from(fileList || [])
     const problems = picked.map(validateImageFile).filter(Boolean)
     setFileError(problems.join(' '))
-    const files = picked.filter((file) => !validateImageFile(file))
+    const files = await Promise.all(
+      picked.filter((file) => !validateImageFile(file)).map(compressToWebp),
+    )
     if (!files.length) return
     const added = files.map((file, i) => ({
       key: `new-${Date.now()}-${i}-${file.name}`,

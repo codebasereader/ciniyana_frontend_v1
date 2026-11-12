@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
 import { fetchArticlePosts } from '../../api'
-import { articlePosts as staticPosts } from './posts'
 
 let cache = {
   posts: null,
@@ -12,9 +11,9 @@ export function invalidateArticleCache() {
   cache = { posts: null, promise: null, error: null }
 }
 
-async function loadArticlePosts({ fallback = true } = {}) {
+async function loadArticlePosts() {
   if (cache.posts) {
-    return { posts: cache.posts, fromApi: true, error: null }
+    return { posts: cache.posts, error: null }
   }
 
   if (!cache.promise) {
@@ -32,33 +31,28 @@ async function loadArticlePosts({ fallback = true } = {}) {
 
   try {
     const posts = await cache.promise
-    return { posts, fromApi: true, error: null }
+    return { posts, error: null }
   } catch (err) {
     const message = err.message || 'Failed to load posts'
     cache.error = message
-    if (fallback) {
-      return { posts: staticPosts, fromApi: false, error: message }
-    }
-    return { posts: [], fromApi: false, error: message }
+    return { posts: [], error: message }
   }
 }
 
-export function useArticlePosts({ fallback = true } = {}) {
-  const [posts, setPosts] = useState(() => cache.posts || (fallback ? staticPosts : []))
+export function useArticlePosts() {
+  const [posts, setPosts] = useState(() => cache.posts || [])
   const [loading, setLoading] = useState(() => !cache.posts)
   const [error, setError] = useState(null)
-  const [fromApi, setFromApi] = useState(() => Boolean(cache.posts))
 
   const reload = useCallback(async () => {
     invalidateArticleCache()
     setLoading(true)
-    const result = await loadArticlePosts({ fallback })
+    const result = await loadArticlePosts()
     setPosts(result.posts)
-    setFromApi(result.fromApi)
     setError(result.error)
     setLoading(false)
     return result
-  }, [fallback])
+  }, [])
 
   useEffect(() => {
     let cancelled = false
@@ -66,15 +60,13 @@ export function useArticlePosts({ fallback = true } = {}) {
     async function run() {
       if (cache.posts) {
         setPosts(cache.posts)
-        setFromApi(true)
         setLoading(false)
         return
       }
       setLoading(true)
-      const result = await loadArticlePosts({ fallback })
+      const result = await loadArticlePosts()
       if (cancelled) return
       setPosts(result.posts)
-      setFromApi(result.fromApi)
       setError(result.error)
       setLoading(false)
     }
@@ -83,7 +75,7 @@ export function useArticlePosts({ fallback = true } = {}) {
     return () => {
       cancelled = true
     }
-  }, [fallback])
+  }, [])
 
-  return { posts, loading, error, fromApi, setPosts, reload }
+  return { posts, loading, error, setPosts, reload }
 }

@@ -4,25 +4,8 @@ import { RemembranceDetail } from '../../components/posts'
 import { SECTION_THEMES } from '../../components/section'
 import { fetchPhotoStoryBySlug } from '../../api'
 import { photoStoryData } from './data'
-import {
-  getPhotoStoryAdjacent,
-  getPhotoStoryPostBySlug,
-  getPhotoStoryRelated,
-} from './posts'
 
 const BASE_PATH = '/photo-story'
-
-function fromStatic(slug) {
-  const post = getPhotoStoryPostBySlug(slug)
-  if (!post) return null
-  const { prev, next } = getPhotoStoryAdjacent(slug)
-  return {
-    post,
-    prev,
-    next,
-    related: getPhotoStoryRelated(slug),
-  }
-}
 
 export default function PhotoStoryDetailPage() {
   const { slug } = useParams()
@@ -41,23 +24,13 @@ export default function PhotoStoryDetailPage() {
         const data = await fetchPhotoStoryBySlug(slug)
         if (cancelled) return
         if (!data?.post) {
-          const fallback = fromStatic(slug)
-          setState({
-            loading: false,
-            data: fallback,
-            notFound: !fallback,
-          })
+          setState({ loading: false, data: null, notFound: true })
           return
         }
         setState({ loading: false, data, notFound: false })
       } catch {
         if (cancelled) return
-        const fallback = fromStatic(slug)
-        setState({
-          loading: false,
-          data: fallback,
-          notFound: !fallback,
-        })
+        setState({ loading: false, data: null, notFound: true })
       }
     }
 

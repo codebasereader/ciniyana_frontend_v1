@@ -6,18 +6,13 @@ import { useFlashBackPosts } from './useFlashBackPosts'
 const BASE_PATH = '/flash-back'
 
 export default function FlashBackPage() {
-  const { posts, loading, error, fromApi } = useFlashBackPosts()
+  const { posts, loading } = useFlashBackPosts()
 
   return (
     <MenuPageLayout data={flashBackData}>
       <div className="bg-white -mt-1 pt-0 pb-6 sm:mt-0 sm:pt-2 sm:pb-8">
         {loading ? (
           <p className="px-4 py-8 text-center text-sm text-[#666]">Loading…</p>
-        ) : null}
-        {!loading && error && !fromApi ? (
-          <p className="px-4 pb-2 text-center text-xs text-[#999]">
-            Showing saved content (API unavailable)
-          </p>
         ) : null}
         {!loading && posts.length === 0 ? (
           <p className="px-4 py-8 text-center text-sm text-[#666]">No posts yet.</p>

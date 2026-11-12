@@ -4,25 +4,8 @@ import { RemembranceDetail } from '../../components/posts'
 import { SECTION_THEMES } from '../../components/section'
 import { fetchRemembranceBySlug } from '../../api'
 import { remembranceData } from './data'
-import {
-  getRemembranceAdjacent,
-  getRemembrancePostBySlug,
-  getRemembranceRelated,
-} from './posts'
 
 const BASE_PATH = '/remembrance'
-
-function fromStatic(slug) {
-  const post = getRemembrancePostBySlug(slug)
-  if (!post) return null
-  const { prev, next } = getRemembranceAdjacent(slug)
-  return {
-    post,
-    prev,
-    next,
-    related: getRemembranceRelated(slug),
-  }
-}
 
 export default function RemembranceDetailPage() {
   const { slug } = useParams()
@@ -41,23 +24,13 @@ export default function RemembranceDetailPage() {
         const data = await fetchRemembranceBySlug(slug)
         if (cancelled) return
         if (!data?.post) {
-          const fallback = fromStatic(slug)
-          setState({
-            loading: false,
-            data: fallback,
-            notFound: !fallback,
-          })
+          setState({ loading: false, data: null, notFound: true })
           return
         }
         setState({ loading: false, data, notFound: false })
       } catch {
         if (cancelled) return
-        const fallback = fromStatic(slug)
-        setState({
-          loading: false,
-          data: fallback,
-          notFound: !fallback,
-        })
+        setState({ loading: false, data: null, notFound: true })
       }
     }
 

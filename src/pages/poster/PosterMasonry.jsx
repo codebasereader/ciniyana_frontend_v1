@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux'
 import { selectLanguage } from '../../store/slices/languageSlice'
 import { SECTION_THEMES } from '../../components/section'
 import PosterLightbox from './PosterLightbox'
+import Watermark from '../../components/ui/Watermark'
 
 /**
  * Pinterest-style masonry wall — click opens lightbox (no detail route).
@@ -26,7 +27,7 @@ export default function PosterMasonry({ posters }) {
               key={poster.id}
               type="button"
               onClick={() => setActiveIndex(index)}
-              className="group mb-3 block w-full break-inside-avoid overflow-hidden rounded-sm bg-[#f3ebe0] text-left shadow-sm hover:shadow-md sm:mb-4"
+              className="group relative mb-3 block w-full break-inside-avoid overflow-hidden rounded-sm bg-[#f3ebe0] text-left shadow-sm hover:shadow-md sm:mb-4"
             >
               <img
                 src={poster.image}
@@ -34,6 +35,7 @@ export default function PosterMasonry({ posters }) {
                 className="block w-full object-cover group-hover:brightness-[0.97]"
                 loading="lazy"
               />
+              <Watermark />
               <div className="px-2.5 py-2 sm:px-3 sm:py-2.5">
                 <span className="font-['Baloo_Tamma_2'] text-xs font-semibold leading-snug text-[#333] sm:text-sm">
                   {title}

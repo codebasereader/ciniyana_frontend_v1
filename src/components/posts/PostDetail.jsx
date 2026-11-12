@@ -14,6 +14,7 @@ import { selectLanguage } from '../../store/slices/languageSlice'
 import { CREAM_MINT_STRIPE } from '../section/sectionThemes'
 import { toExcerpt } from '../../lib/text'
 import { toAbsoluteUrl } from '../../lib/url'
+import Watermark from '../ui/Watermark'
 
 /**
  * Detail view — 2-col grid:
@@ -81,12 +82,13 @@ export default function PostDetail({
           ) : null}
 
           <div className="px-4 pb-6 pt-10 sm:px-6 sm:pb-8 sm:pt-12 md:px-8 md:pt-10 lg:px-10 lg:pb-10 lg:pt-12">
-            <div className="overflow-hidden border border-[#d8d0c4] bg-[#ece8e1] shadow-sm">
+            <div className="relative overflow-hidden border border-[#d8d0c4] bg-[#ece8e1] shadow-sm">
               <img
                 src={post.image}
                 alt={title}
                 className="aspect-[4/3] w-full object-cover"
               />
+              <Watermark />
             </div>
             {credit ? (
               <p className="mt-2 text-xs text-[#555]">

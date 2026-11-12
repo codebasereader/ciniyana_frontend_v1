@@ -4,25 +4,8 @@ import { RemembranceDetail } from '../../components/posts'
 import { SECTION_THEMES } from '../../components/section'
 import { fetchFilmTodayBySlug } from '../../api'
 import { filmTodayData } from './data'
-import {
-  getFilmTodayAdjacent,
-  getFilmTodayPostBySlug,
-  getFilmTodayRelated,
-} from './posts'
 
 const BASE_PATH = '/film-today'
-
-function fromStatic(slug) {
-  const post = getFilmTodayPostBySlug(slug)
-  if (!post) return null
-  const { prev, next } = getFilmTodayAdjacent(slug)
-  return {
-    post,
-    prev,
-    next,
-    related: getFilmTodayRelated(slug),
-  }
-}
 
 export default function FilmTodayDetailPage() {
   const { slug } = useParams()
@@ -41,23 +24,13 @@ export default function FilmTodayDetailPage() {
         const data = await fetchFilmTodayBySlug(slug)
         if (cancelled) return
         if (!data?.post) {
-          const fallback = fromStatic(slug)
-          setState({
-            loading: false,
-            data: fallback,
-            notFound: !fallback,
-          })
+          setState({ loading: false, data: null, notFound: true })
           return
         }
         setState({ loading: false, data, notFound: false })
       } catch {
         if (cancelled) return
-        const fallback = fromStatic(slug)
-        setState({
-          loading: false,
-          data: fallback,
-          notFound: !fallback,
-        })
+        setState({ loading: false, data: null, notFound: true })
       }
     }
 

@@ -3,25 +3,8 @@ import { Navigate, useParams } from 'react-router-dom'
 import { PostDetail } from '../../components/posts'
 import { fetchFlashBackBySlug } from '../../api'
 import { flashBackData } from './data'
-import {
-  getFlashBackAdjacent,
-  getFlashBackPostBySlug,
-  getFlashBackRelated,
-} from './posts'
 
 const BASE_PATH = '/flash-back'
-
-function fromStatic(slug) {
-  const post = getFlashBackPostBySlug(slug)
-  if (!post) return null
-  const { prev, next } = getFlashBackAdjacent(slug)
-  return {
-    post,
-    prev,
-    next,
-    related: getFlashBackRelated(slug),
-  }
-}
 
 export default function FlashBackDetailPage() {
   const { slug } = useParams()
@@ -40,23 +23,13 @@ export default function FlashBackDetailPage() {
         const data = await fetchFlashBackBySlug(slug)
         if (cancelled) return
         if (!data?.post) {
-          const fallback = fromStatic(slug)
-          setState({
-            loading: false,
-            data: fallback,
-            notFound: !fallback,
-          })
+          setState({ loading: false, data: null, notFound: true })
           return
         }
         setState({ loading: false, data, notFound: false })
       } catch {
         if (cancelled) return
-        const fallback = fromStatic(slug)
-        setState({
-          loading: false,
-          data: fallback,
-          notFound: !fallback,
-        })
+        setState({ loading: false, data: null, notFound: true })
       }
     }
 

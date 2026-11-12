@@ -9,6 +9,7 @@ import { filmTodayData } from '../../film-today/data'
 import { useFilmTodayPosts } from '../../film-today/useFilmTodayPosts'
 import { excerpt, pickLang } from '../utils'
 import { useAutoCarousel } from '../useAutoCarousel'
+import Watermark from '../../../components/ui/Watermark'
 
 export default function HeroSection() {
   const language = useSelector(selectLanguage)
@@ -73,6 +74,7 @@ export default function HeroSection() {
                     className="aspect-[16/10] w-full object-cover grayscale sm:aspect-[16/9]"
                     draggable={false}
                   />
+                  <Watermark />
                 </Link>
               ) : (
                 <div className="aspect-[16/10] rounded-xl bg-[#ece8e1] sm:aspect-[16/9] sm:rounded-2xl" />
@@ -176,6 +178,7 @@ export default function HeroSection() {
                 className="aspect-[16/10] w-full object-cover sm:aspect-[16/9]"
                 draggable={false}
               />
+              <Watermark />
             </Link>
           ) : (
             <div className="mx-auto aspect-[16/10] w-full max-w-full rounded-lg bg-[#ece8e1] sm:aspect-[16/9] sm:max-w-[92%]" />

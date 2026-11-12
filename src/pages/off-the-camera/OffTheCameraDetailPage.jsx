@@ -4,25 +4,8 @@ import { RemembranceDetail } from '../../components/posts'
 import { SECTION_THEMES } from '../../components/section'
 import { fetchOffTheCameraBySlug } from '../../api'
 import { offTheCameraData } from './data'
-import {
-  getOffTheCameraAdjacent,
-  getOffTheCameraPostBySlug,
-  getOffTheCameraRelated,
-} from './posts'
 
 const BASE_PATH = '/off-the-camera'
-
-function fromStatic(slug) {
-  const post = getOffTheCameraPostBySlug(slug)
-  if (!post) return null
-  const { prev, next } = getOffTheCameraAdjacent(slug)
-  return {
-    post,
-    prev,
-    next,
-    related: getOffTheCameraRelated(slug),
-  }
-}
 
 export default function OffTheCameraDetailPage() {
   const { slug } = useParams()
@@ -41,23 +24,13 @@ export default function OffTheCameraDetailPage() {
         const data = await fetchOffTheCameraBySlug(slug)
         if (cancelled) return
         if (!data?.post) {
-          const fallback = fromStatic(slug)
-          setState({
-            loading: false,
-            data: fallback,
-            notFound: !fallback,
-          })
+          setState({ loading: false, data: null, notFound: true })
           return
         }
         setState({ loading: false, data, notFound: false })
       } catch {
         if (cancelled) return
-        const fallback = fromStatic(slug)
-        setState({
-          loading: false,
-          data: fallback,
-          notFound: !fallback,
-        })
+        setState({ loading: false, data: null, notFound: true })
       }
     }
 

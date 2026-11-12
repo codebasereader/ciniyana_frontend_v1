@@ -4,25 +4,8 @@ import { RemembranceDetail } from '../../components/posts'
 import { SECTION_THEMES } from '../../components/section'
 import { fetchArticleBySlug } from '../../api'
 import { articleData } from './data'
-import {
-  getArticleAdjacent,
-  getArticlePostBySlug,
-  getArticleRelated,
-} from './posts'
 
 const BASE_PATH = '/article'
-
-function fromStatic(slug) {
-  const post = getArticlePostBySlug(slug)
-  if (!post) return null
-  const { prev, next } = getArticleAdjacent(slug)
-  return {
-    post,
-    prev,
-    next,
-    related: getArticleRelated(slug),
-  }
-}
 
 export default function ArticleDetailPage() {
   const { slug } = useParams()
@@ -41,23 +24,13 @@ export default function ArticleDetailPage() {
         const data = await fetchArticleBySlug(slug)
         if (cancelled) return
         if (!data?.post) {
-          const fallback = fromStatic(slug)
-          setState({
-            loading: false,
-            data: fallback,
-            notFound: !fallback,
-          })
+          setState({ loading: false, data: null, notFound: true })
           return
         }
         setState({ loading: false, data, notFound: false })
       } catch {
         if (cancelled) return
-        const fallback = fromStatic(slug)
-        setState({
-          loading: false,
-          data: fallback,
-          notFound: !fallback,
-        })
+        setState({ loading: false, data: null, notFound: true })
       }
     }
 

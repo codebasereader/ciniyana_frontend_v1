@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa'
 import { AnimatePresence, motion } from 'motion/react'
 import { fadeCross } from '../motion/presets'
+import Watermark from '../ui/Watermark'
 
 /**
  * End-of-article image carousel — caption sits ABOVE each slide.
@@ -43,6 +44,7 @@ export default function GalleryCarousel({ slides = [], accent = '#2f7a5c' }) {
               draggable={false}
             />
           </AnimatePresence>
+          <Watermark />
 
           {total > 1 ? (
             <>

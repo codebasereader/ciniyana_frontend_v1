@@ -1,5 +1,5 @@
 import { useId, useState } from 'react'
-import { validateImageFile } from '../../../../lib/imageFile'
+import { compressToWebp, validateImageFile } from '../../../../lib/imageFile'
 
 export default function ImageUploadField({
   label,
@@ -42,12 +42,13 @@ export default function ImageUploadField({
           type="file"
           accept={accept}
           className="hidden"
-          onChange={(e) => {
-            const file = e.target.files?.[0] || null
-            const problem = validateImageFile(file)
-            setFileError(problem || '')
-            if (!problem) onFileChange(file)
+          onChange={async (e) => {
+            const picked = e.target.files?.[0] || null
             e.target.value = ''
+            const problem = validateImageFile(picked)
+            setFileError(problem || '')
+            if (problem) return
+            onFileChange(picked ? await compressToWebp(picked) : null)
           }}
         />
         {previewUrl && onClear ? (

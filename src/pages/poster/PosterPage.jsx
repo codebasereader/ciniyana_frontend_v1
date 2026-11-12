@@ -4,7 +4,7 @@ import { usePosterPosts } from './usePosterPosts'
 import PosterMasonry from './PosterMasonry'
 
 export default function PosterPage() {
-  const { posts, loading, error, fromApi } = usePosterPosts()
+  const { posts, loading } = usePosterPosts()
 
   return (
     <MenuPageLayout data={posterData}>
@@ -12,11 +12,6 @@ export default function PosterPage() {
         <div className="mx-auto max-w-6xl">
           {loading ? (
             <p className="py-8 text-center text-sm text-[#666]">Loading…</p>
-          ) : null}
-          {!loading && error && !fromApi ? (
-            <p className="pb-2 text-center text-xs text-[#999]">
-              Showing saved content (API unavailable)
-            </p>
           ) : null}
           {!loading && posts.length === 0 ? (
             <p className="py-8 text-center text-sm text-[#666]">No posters yet.</p>

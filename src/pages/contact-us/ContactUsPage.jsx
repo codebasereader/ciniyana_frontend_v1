@@ -128,6 +128,7 @@ function AcademyContactBlock({ language }) {
  */
 export default function ContactUsPage() {
   const language = useSelector(selectLanguage)
+  const [deputyCm, ...officials] = topOfficials
   const aboutParagraphs = pick(contactUsCopy.aboutBody, language)
 
   return (
@@ -140,16 +141,17 @@ export default function ContactUsPage() {
       {/* Leadership — peach band */}
       <section className="w-full" style={{ backgroundColor: PEACH }}>
         <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10 md:py-12">
+          <div className="mx-auto grid max-w-2xl grid-cols-1 gap-7 sm:grid-cols-2 sm:gap-6 md:gap-8">
           <FadeIn>
-            <PersonCard
-              person={chiefMinister}
-              language={language}
-              size="lg"
-            />
+            <PersonCard person={chiefMinister} language={language} size="lg" />
           </FadeIn>
+          <FadeIn delay={0.05}>
+            <PersonCard person={deputyCm} language={language} size="lg" />
+          </FadeIn>
+        </div>
 
-          <div className="mt-8 grid grid-cols-1 gap-7 sm:mt-10 sm:grid-cols-3 sm:gap-6 md:gap-8">
-            {topOfficials.map((person, i) => (
+        <div className="mx-auto mt-8 grid max-w-2xl grid-cols-1 gap-7 sm:mt-10 sm:grid-cols-2 sm:gap-6 md:gap-8">
+            {officials.map((person, i) => (
               <FadeIn key={person.id} delay={0.05 * (i + 1)}>
                 <PersonCard person={person} language={language} size="md" />
               </FadeIn>

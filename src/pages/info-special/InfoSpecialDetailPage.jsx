@@ -4,25 +4,8 @@ import { RemembranceDetail } from '../../components/posts'
 import { SECTION_THEMES } from '../../components/section'
 import { fetchInfoSpecialBySlug } from '../../api'
 import { infoSpecialData } from './data'
-import {
-  getInfoSpecialAdjacent,
-  getInfoSpecialPostBySlug,
-  getInfoSpecialRelated,
-} from './posts'
 
 const BASE_PATH = '/info-special'
-
-function fromStatic(slug) {
-  const post = getInfoSpecialPostBySlug(slug)
-  if (!post) return null
-  const { prev, next } = getInfoSpecialAdjacent(slug)
-  return {
-    post,
-    prev,
-    next,
-    related: getInfoSpecialRelated(slug),
-  }
-}
 
 export default function InfoSpecialDetailPage() {
   const { slug } = useParams()
@@ -41,23 +24,13 @@ export default function InfoSpecialDetailPage() {
         const data = await fetchInfoSpecialBySlug(slug)
         if (cancelled) return
         if (!data?.post) {
-          const fallback = fromStatic(slug)
-          setState({
-            loading: false,
-            data: fallback,
-            notFound: !fallback,
-          })
+          setState({ loading: false, data: null, notFound: true })
           return
         }
         setState({ loading: false, data, notFound: false })
       } catch {
         if (cancelled) return
-        const fallback = fromStatic(slug)
-        setState({
-          loading: false,
-          data: fallback,
-          notFound: !fallback,
-        })
+        setState({ loading: false, data: null, notFound: true })
       }
     }
 

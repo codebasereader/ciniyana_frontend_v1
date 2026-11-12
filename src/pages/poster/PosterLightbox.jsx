@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux'
 import { FaChevronLeft, FaChevronRight, FaTimes } from 'react-icons/fa'
 import { AnimatePresence, motion } from 'motion/react'
 import { selectLanguage } from '../../store/slices/languageSlice'
+import Watermark from '../../components/ui/Watermark'
 
 /**
  * Lightbox: large active poster + thumbnail carousel below (active highlighted).
@@ -93,12 +94,15 @@ export default function PosterLightbox({
             transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
             className="flex max-h-full w-full max-w-4xl flex-col items-center"
           >
-            <img
-              src={active.image}
-              alt={title || ''}
-              className="max-h-[min(62vh,720px)] w-auto max-w-full object-contain shadow-2xl"
-              draggable={false}
-            />
+            <div className="relative max-w-full leading-none">
+              <img
+                src={active.image}
+                alt={title || ''}
+                className="max-h-[min(62vh,720px)] w-auto max-w-full object-contain shadow-2xl"
+                draggable={false}
+              />
+              <Watermark />
+            </div>
             {title ? (
               <p className="mt-3 text-center font-['Baloo_Tamma_2'] text-base font-semibold text-white sm:text-lg">
                 {title}

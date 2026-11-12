@@ -17,6 +17,7 @@ import { ENGLISH_MENU, KANNADA_MENU } from '../../data/menus'
 import { toExcerpt } from '../../lib/text'
 import { toAbsoluteUrl } from '../../lib/url'
 import { SITE_NAME } from '../../constants/site'
+import Watermark from '../ui/Watermark'
 
 const DEFAULT_ACCENT = '#ff502f'
 
@@ -170,7 +171,7 @@ export default function RemembranceDetail({
                 isPoster ? 'md:max-w-[20rem] lg:max-w-[22rem]' : ''
               }`}
             >
-              <div className="overflow-hidden border-[5px] border-[#f7e6e2] bg-[#f7e6e2] shadow-md">
+              <div className="relative overflow-hidden border-[5px] border-[#f7e6e2] bg-[#f7e6e2] shadow-md">
                 <img
                   src={post.image}
                   alt={title}
@@ -180,6 +181,7 @@ export default function RemembranceDetail({
                       : 'h-auto w-full object-cover object-center'
                   }
                 />
+                <Watermark />
               </div>
             </div>
           </div>
@@ -200,12 +202,15 @@ export default function RemembranceDetail({
                   <p key={`p-${i}`}>{block.text}</p>
                 ) : (
                   <figure key={`img-${i}`} className="py-2">
-                    <img
-                      src={block.item.src}
-                      alt=""
-                      className="w-full border border-[#ddd] object-cover"
-                      loading="lazy"
-                    />
+                    <div className="relative">
+                      <img
+                        src={block.item.src}
+                        alt=""
+                        className="w-full border border-[#ddd] object-cover"
+                        loading="lazy"
+                      />
+                      <Watermark />
+                    </div>
                     {(language === 'en'
                       ? block.item.caption?.en
                       : block.item.caption?.kn) ? (
@@ -232,14 +237,15 @@ export default function RemembranceDetail({
               ) : post.gallery?.length ? (
                 post.gallery.map((item, idx) => (
                   <figure key={idx} className="mt-8">
-                    <img
-                      src={item.src}
-                      alt=""
-                      className={`w-full border border-[#ddd] object-cover ${
-                        isPoster ? 'mx-auto max-w-md' : ''
-                      }`}
-                      loading="lazy"
-                    />
+                    <div className={`relative ${isPoster ? 'mx-auto max-w-md' : ''}`}>
+                      <img
+                        src={item.src}
+                        alt=""
+                        className="w-full border border-[#ddd] object-cover"
+                        loading="lazy"
+                      />
+                      <Watermark />
+                    </div>
                     {(language === 'en' ? item.caption?.en : item.caption?.kn) ? (
                       <figcaption className="mt-2 text-sm leading-snug text-[#555]">
                         {language === 'en' ? item.caption.en : item.caption.kn}
@@ -276,12 +282,15 @@ export default function RemembranceDetail({
                 {related.map((item) => (
                   <li key={item.id}>
                     <Link to={`${basePath}/${item.slug}`} className="group block">
-                      <img
-                        src={item.image}
-                        alt={language === 'en' ? item.title.en : item.title.kn}
-                        className="mb-2 aspect-video w-full object-cover"
-                        loading="lazy"
-                      />
+                      <div className="relative mb-2">
+                        <img
+                          src={item.image}
+                          alt={language === 'en' ? item.title.en : item.title.kn}
+                          className="aspect-video w-full object-cover"
+                          loading="lazy"
+                        />
+                        <Watermark />
+                      </div>
                       <span
                         className="text-sm font-semibold group-hover:underline"
                         style={{ color: accent }}

@@ -33,3 +33,42 @@ export function validateImageFile(file) {
   }
   return null
 }
+
+const MAX_DIMENSION = 1920
+const WEBP_QUALITY = 0.82
+
+/**
+ * Re-encodes an image as WebP in the browser before upload (resized so the
+ * longest side is at most 1920px). Falls back to the original file if the
+ * browser can't decode/encode it, if it's an animated-capable GIF, or if the
+ * result would be larger than what the admin picked.
+ *
+ * @param {File} file
+ * @returns {Promise<File>}
+ */
+export async function compressToWebp(file) {
+  if (!file || file.type === 'image/gif') return file
+  try {
+    const bitmap = await createImageBitmap(file)
+    const scale = Math.min(1, MAX_DIMENSION / Math.max(bitmap.width, bitmap.height))
+    const width = Math.max(1, Math.round(bitmap.width * scale))
+    const height = Math.max(1, Math.round(bitmap.height * scale))
+
+    const canvas = document.createElement('canvas')
+    canvas.width = width
+    canvas.height = height
+    canvas.getContext('2d').drawImage(bitmap, 0, 0, width, height)
+    bitmap.close?.()
+
+    const blob = await new Promise((resolve) =>
+      canvas.toBlob(resolve, 'image/webp', WEBP_QUALITY),
+    )
+    if (!blob || blob.type !== 'image/webp') return file
+    if (file.type === 'image/webp' && blob.size >= file.size && scale === 1) return file
+
+    const stem = String(file.name || 'image').replace(/\.[^.]*$/, '') || 'image'
+    return new File([blob], `${stem}.webp`, { type: 'image/webp', lastModified: Date.now() })
+  } catch {
+    return file
+  }
+}
