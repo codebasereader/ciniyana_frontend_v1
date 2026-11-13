@@ -143,7 +143,6 @@ export const generalBodyMembers = [
 ]
 
 // Names-only members (no photo), listed after the photo cards above.
-// `name` is omitted where the source list gives only the office-bearer's post.
 export const generalBodyNominees = [
   {
     id: 'jayamala',
@@ -167,13 +166,6 @@ export const generalBodyNominees = [
     title: {
       kn: 'ಅಧ್ಯಕ್ಷರು, ಕರ್ನಾಟಕ ಚಲನಚಿತ್ರ ನಿರ್ದೇಶಕರ ಸಂಘ',
       en: 'President, Karnataka Film Directors Association',
-    },
-  },
-  {
-    id: 'artistes-association',
-    title: {
-      kn: 'ಅಧ್ಯಕ್ಷರು, ಕರ್ನಾಟಕ ಚಲನಚಿತ್ರ ಕಲಾವಿದರ ಸಂಘ',
-      en: 'President, Karnataka Film Artistes Association',
     },
   },
   {
