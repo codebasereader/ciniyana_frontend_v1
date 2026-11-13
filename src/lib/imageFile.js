@@ -46,18 +46,37 @@ const WEBP_QUALITY = 0.82
  * @param {File} file
  * @returns {Promise<File>}
  */
-export async function compressToWebp(file) {
+export async function compressToWebp(file, exactSize) {
   if (!file || file.type === 'image/gif') return file
   try {
     const bitmap = await createImageBitmap(file)
-    const scale = Math.min(1, MAX_DIMENSION / Math.max(bitmap.width, bitmap.height))
-    const width = Math.max(1, Math.round(bitmap.width * scale))
-    const height = Math.max(1, Math.round(bitmap.height * scale))
+    let scale = Math.min(1, MAX_DIMENSION / Math.max(bitmap.width, bitmap.height))
+    let width = Math.max(1, Math.round(bitmap.width * scale))
+    let height = Math.max(1, Math.round(bitmap.height * scale))
 
     const canvas = document.createElement('canvas')
-    canvas.width = width
-    canvas.height = height
-    canvas.getContext('2d').drawImage(bitmap, 0, 0, width, height)
+    if (exactSize) {
+      // Cover-fit: scale to fill the target, then centre-crop the overflow.
+      const cover = Math.max(exactSize.width / bitmap.width, exactSize.height / bitmap.height)
+      const drawW = bitmap.width * cover
+      const drawH = bitmap.height * cover
+      canvas.width = exactSize.width
+      canvas.height = exactSize.height
+      const ctx = canvas.getContext('2d')
+      ctx.imageSmoothingQuality = 'high'
+      ctx.drawImage(
+        bitmap,
+        (exactSize.width - drawW) / 2,
+        (exactSize.height - drawH) / 2,
+        drawW,
+        drawH,
+      )
+      scale = 0 // never fall back to the uncropped original below
+    } else {
+      canvas.width = width
+      canvas.height = height
+      canvas.getContext('2d').drawImage(bitmap, 0, 0, width, height)
+    }
     bitmap.close?.()
 
     const blob = await new Promise((resolve) =>

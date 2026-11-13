@@ -3,21 +3,44 @@ import { compressToWebp, validateImageFile } from '../../../../lib/imageFile'
 
 export default function ImageUploadField({
   label,
+  required = false,
   previewUrl,
   error,
   onFileChange,
   onClear,
   accept = 'image/jpeg,image/png,image/webp,image/gif',
+  // Optional exact output size, e.g. { width: 1080, height: 1350 }. The picked
+  // image is centre-cropped to this ratio and resized to exactly this size.
+  targetSize = null,
+  hint = '',
 }) {
+  const aspectStyle = targetSize
+    ? { aspectRatio: `${targetSize.width} / ${targetSize.height}` }
+    : undefined
+  const aspectClass = targetSize ? '' : 'aspect-[4/3]'
   const inputId = useId()
   const [fileError, setFileError] = useState('')
 
   return (
     <div className="flex w-full min-w-0 flex-col gap-2">
-      <span className="text-sm font-semibold text-[#333]">{label}</span>
+      <span className="text-sm font-semibold text-[#333]">
+        {label}
+        {required ? (
+          <>
+            <span className="text-[#ac222b]" aria-hidden="true">
+              {' '}
+              *
+            </span>
+            <span className="sr-only"> (required)</span>
+          </>
+        ) : null}
+      </span>
 
       {previewUrl ? (
-        <div className="relative aspect-[4/3] w-full max-w-md overflow-hidden rounded-lg border border-[#ddd] bg-[#f3f0eb]">
+        <div
+          style={aspectStyle}
+          className={`relative ${aspectClass} w-full max-w-md overflow-hidden rounded-lg border border-[#ddd] bg-[#f3f0eb]`}
+        >
           <img
             src={previewUrl}
             alt="Preview"
@@ -25,10 +48,14 @@ export default function ImageUploadField({
           />
         </div>
       ) : (
-        <div className="flex aspect-[4/3] w-full max-w-md items-center justify-center rounded-lg border border-dashed border-[#ccc] bg-[#faf8f5] text-sm text-[#888]">
+        <div
+          style={aspectStyle}
+          className={`flex ${aspectClass} w-full max-w-md items-center justify-center rounded-lg border border-dashed border-[#ccc] bg-[#faf8f5] text-sm text-[#888]`}
+        >
           No image selected
         </div>
       )}
+      {hint ? <p className="text-xs text-[#666]">{hint}</p> : null}
 
       <div className="relative flex flex-wrap items-center gap-2">
         <label
@@ -48,7 +75,7 @@ export default function ImageUploadField({
             const problem = validateImageFile(picked)
             setFileError(problem || '')
             if (problem) return
-            onFileChange(picked ? await compressToWebp(picked) : null)
+            onFileChange(picked ? await compressToWebp(picked, targetSize || undefined) : null)
           }}
         />
         {previewUrl && onClear ? (

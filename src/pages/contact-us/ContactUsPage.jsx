@@ -10,6 +10,7 @@ import {
   contactUsCopy,
   editor,
   generalBodyMembers,
+  generalBodyNominees,
   registrar,
   topOfficials,
 } from './data'
@@ -213,6 +214,26 @@ export default function ContactUsPage() {
               </FadeIn>
             ))}
           </div>
+
+          {/* Names-only members, after the photo cards */}
+          <ul className="mx-auto mt-8 grid max-w-5xl grid-cols-1 gap-3 sm:mt-10 sm:grid-cols-2 md:grid-cols-3">
+            {generalBodyNominees.map((person, i) => (
+              <li key={person.id} className="h-full">
+                <FadeIn delay={0.03 * (i + 1)}>
+                <div className="h-full rounded-sm bg-white px-3 py-2.5 text-center shadow-sm">
+                  {person.name ? (
+                    <p className="font-['Baloo_Tamma_2'] text-[13px] font-bold leading-snug text-[#1a1a1a] sm:text-sm">
+                      {pick(person.name, language)}
+                    </p>
+                  ) : null}
+                  <p className="mt-0.5 text-[11px] leading-snug text-[#444] sm:text-xs">
+                    {pick(person.title, language)}
+                  </p>
+                </div>
+              </FadeIn>
+            </li>
+            ))}
+          </ul>
         </div>
       </section>
 

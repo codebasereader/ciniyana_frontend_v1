@@ -29,7 +29,15 @@ export default function FormPageHeader({
           <FaChevronLeft className="text-xs" />
           {backLabel}
         </button>
-        <h1 className="min-w-0 text-2xl font-bold text-[#ac222b] sm:text-3xl">{title}</h1>
+        <div className="min-w-0">
+          <h1 className="text-2xl font-bold text-[#ac222b] sm:text-3xl">{title}</h1>
+          <p className="mt-0.5 text-xs text-[#666]">
+            <span className="text-[#ac222b]" aria-hidden="true">
+              *
+            </span>{' '}
+            Required field
+          </p>
+        </div>
       </div>
       <div className="flex flex-wrap gap-2">
         {onCancel ? (

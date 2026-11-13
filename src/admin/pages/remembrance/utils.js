@@ -67,8 +67,7 @@ export function validateRemembranceFields(fields, { requireImage, hasExistingIma
 
   if (!fields.titleEn?.trim()) errors.titleEn = 'English title is required'
   if (!fields.titleKn?.trim()) errors.titleKn = 'Kannada title is required'
-  if (!fields.subtitleEn?.trim()) errors.subtitleEn = 'English subtitle is required'
-  if (!fields.subtitleKn?.trim()) errors.subtitleKn = 'Kannada subtitle is required'
+  // Subtitles are optional — the detail page renders fine without them.
   if (!fields.bodyEn?.trim()) errors.bodyEn = 'English body is required'
   if (!fields.bodyKn?.trim()) errors.bodyKn = 'Kannada body is required'
   if (!fields.slug?.trim()) errors.slug = 'Slug is required'

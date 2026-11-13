@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import ImageUploadField from '../../flash-back/components/ImageUploadField'
 import GalleryEditor from '../../remembrance/components/GalleryEditor'
 import { slugify, validateOffTheCameraFields } from '../utils'
+import FormErrorSummary, { scrollToFirstError } from '../../../components/FormErrorSummary'
 
 function Field({ label, error, children }) {
   return (
@@ -41,6 +42,7 @@ export default function OffTheCameraForm({
   const [galleryItems, setGalleryItems] = useState(initialGallery)
   const [slugManual, setSlugManual] = useState(Boolean(initialFields.slug))
   const [errors, setErrors] = useState({})
+  const formRef = useRef(null)
 
   useEffect(() => {
     setFields(initialFields)
@@ -85,7 +87,10 @@ export default function OffTheCameraForm({
       hasExistingImage: Boolean(imageFile || previewUrl),
     })
     setErrors(nextErrors)
-    if (Object.keys(nextErrors).length > 0) return
+    if (Object.keys(nextErrors).length > 0) {
+      scrollToFirstError(formRef.current)
+      return
+    }
 
     const gallerySlots = galleryItems.map((item) => {
       if (item.kind === 'existing') {
@@ -111,9 +116,17 @@ export default function OffTheCameraForm({
   }
 
   return (
-    <form id="admin-post-form" onSubmit={handleSubmit} className="mx-auto flex w-full min-w-0 max-w-3xl flex-col gap-5">
+    <form
+      id="admin-post-form"
+      ref={formRef}
+      noValidate
+      onSubmit={handleSubmit}
+      className="mx-auto flex w-full min-w-0 max-w-3xl flex-col gap-5"
+    >
+      <FormErrorSummary errors={errors} />
       <ImageUploadField
         label="Hero image"
+        required
         previewUrl={previewUrl}
         error={errors.image}
         onFileChange={(file) => {
@@ -132,14 +145,14 @@ export default function OffTheCameraForm({
       />
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Title (English)" error={errors.titleEn}>
+        <Field label="Title (English)" error={errors.titleEn} required>
           <input
             className={inputClass}
             value={fields.titleEn}
             onChange={(e) => setField('titleEn', e.target.value)}
           />
         </Field>
-        <Field label="Title (Kannada)" error={errors.titleKn}>
+        <Field label="Title (Kannada)" error={errors.titleKn} required>
           <input
             className={inputClass}
             value={fields.titleKn}
@@ -149,7 +162,7 @@ export default function OffTheCameraForm({
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Subtitle (English)" error={errors.subtitleEn}>
+        <Field label="Subtitle (English)" error={errors.subtitleEn} required>
           <input
             className={inputClass}
             value={fields.subtitleEn}
@@ -157,7 +170,7 @@ export default function OffTheCameraForm({
             placeholder="e.g. speaker name"
           />
         </Field>
-        <Field label="Subtitle (Kannada)" error={errors.subtitleKn}>
+        <Field label="Subtitle (Kannada)" error={errors.subtitleKn} required>
           <input
             className={inputClass}
             value={fields.subtitleKn}
@@ -167,7 +180,7 @@ export default function OffTheCameraForm({
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Slug (URL)" error={errors.slug}>
+        <Field label="Slug (URL)" error={errors.slug} required>
           <input
             className={inputClass}
             value={fields.slug}
@@ -265,7 +278,7 @@ export default function OffTheCameraForm({
         </div>
       </details>
 
-      <Field label="Body (English)" error={errors.bodyEn}>
+      <Field label="Body (English)" error={errors.bodyEn} required>
         <textarea
           className={textareaClass}
           value={fields.bodyEn}
@@ -273,7 +286,7 @@ export default function OffTheCameraForm({
           rows={8}
         />
       </Field>
-      <Field label="Body (Kannada)" error={errors.bodyKn}>
+      <Field label="Body (Kannada)" error={errors.bodyKn} required>
         <textarea
           className={textareaClass}
           value={fields.bodyKn}

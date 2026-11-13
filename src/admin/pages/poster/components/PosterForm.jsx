@@ -1,6 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import ImageUploadField from '../../flash-back/components/ImageUploadField'
 import { validatePosterFields } from '../utils'
+import FormErrorSummary, { scrollToFirstError } from '../../../components/FormErrorSummary'
+
+const POSTER_SIZE = { width: 1080, height: 1350 }
 
 function Field({ label, error, children }) {
   return (
@@ -31,6 +34,7 @@ export default function PosterForm({
   const [imageFile, setImageFile] = useState(null)
   const [previewUrl, setPreviewUrl] = useState(initialImageUrl)
   const [errors, setErrors] = useState({})
+  const formRef = useRef(null)
 
   useEffect(() => {
     setFields(initialFields)
@@ -57,14 +61,27 @@ export default function PosterForm({
       hasExistingImage: Boolean(imageFile || previewUrl),
     })
     setErrors(nextErrors)
-    if (Object.keys(nextErrors).length > 0) return
+    if (Object.keys(nextErrors).length > 0) {
+      scrollToFirstError(formRef.current)
+      return
+    }
     onSubmit(fields, imageFile)
   }
 
   return (
-    <form id="admin-post-form" onSubmit={handleSubmit} className="mx-auto flex w-full min-w-0 max-w-3xl flex-col gap-5">
+    <form
+      id="admin-post-form"
+      ref={formRef}
+      noValidate
+      onSubmit={handleSubmit}
+      className="mx-auto flex w-full min-w-0 max-w-3xl flex-col gap-5"
+    >
+      <FormErrorSummary errors={errors} />
       <ImageUploadField
         label="Poster image"
+        required
+        targetSize={POSTER_SIZE}
+        hint="Portrait 1080 × 1350 px (4:5). Other sizes are centre-cropped and resized automatically."
         previewUrl={previewUrl}
         error={errors.image}
         onFileChange={(file) => {
@@ -83,14 +100,14 @@ export default function PosterForm({
       />
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Title (English)" error={errors.titleEn}>
+        <Field label="Title (English)" error={errors.titleEn} required>
           <input
             className={inputClass}
             value={fields.titleEn}
             onChange={(e) => setField('titleEn', e.target.value)}
           />
         </Field>
-        <Field label="Title (Kannada)" error={errors.titleKn}>
+        <Field label="Title (Kannada)" error={errors.titleKn} required>
           <input
             className={inputClass}
             value={fields.titleKn}

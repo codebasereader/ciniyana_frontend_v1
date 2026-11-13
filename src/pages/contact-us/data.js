@@ -142,6 +142,58 @@ export const generalBodyMembers = [
   },
 ]
 
+// Names-only members (no photo), listed after the photo cards above.
+// `name` is omitted where the source list gives only the office-bearer's post.
+export const generalBodyNominees = [
+  {
+    id: 'jayamala',
+    name: { kn: 'ಶ್ರೀಮತಿ ಜಯಮಾಲ', en: 'Smt. Jayamala' },
+    title: {
+      kn: 'ಅಧ್ಯಕ್ಷರು, ಕರ್ನಾಟಕ ಚಲನಚಿತ್ರ ವಾಣಿಜ್ಯ ಮಂಡಳಿ',
+      en: 'President, Karnataka Film Chamber of Commerce',
+    },
+  },
+  {
+    id: 'mg-ramamurthy',
+    name: { kn: 'ಶ್ರೀ ಎಂ.ಜಿ.ರಾಮಮೂರ್ತಿ', en: 'Sri. M.G. Ramamurthy' },
+    title: {
+      kn: 'ಅಧ್ಯಕ್ಷರು, ಕನ್ನಡ ಚಲನಚಿತ್ರ ನಿರ್ಮಾಪಕರ ಸಂಘ (ರಿ)',
+      en: 'President, Kannada Film Producers Association (Regd.)',
+    },
+  },
+  {
+    id: 'nrk-vishwanath',
+    name: { kn: 'ಶ್ರೀ ಎನ್ನಾರ್‌ ಕೆ.ವಿಶ್ವನಾಥ್‌', en: 'Sri. NRK Vishwanath' },
+    title: {
+      kn: 'ಅಧ್ಯಕ್ಷರು, ಕರ್ನಾಟಕ ಚಲನಚಿತ್ರ ನಿರ್ದೇಶಕರ ಸಂಘ',
+      en: 'President, Karnataka Film Directors Association',
+    },
+  },
+  {
+    id: 'artistes-association',
+    title: {
+      kn: 'ಅಧ್ಯಕ್ಷರು, ಕರ್ನಾಟಕ ಚಲನಚಿತ್ರ ಕಲಾವಿದರ ಸಂಘ',
+      en: 'President, Karnataka Film Artistes Association',
+    },
+  },
+  {
+    id: 'somashekar',
+    name: { kn: 'ಶ್ರೀ ಸೋಮಶೇಖರ್‌', en: 'Sri. Somashekar' },
+    title: {
+      kn: 'ಅಧ್ಯಕ್ಷರು, ಕರ್ನಾಟಕ ಚಲನಚಿತ್ರ ಕಾರ್ಮಿಕರ, ಕಲಾವಿದರ ಹಾಗೂ ತಂತ್ರಜ್ಞರ ಒಕ್ಕೂಟ',
+      en: 'President, Karnataka Film Workers, Artistes and Technicians Federation',
+    },
+  },
+  {
+    id: 'ganesh-rao-kesarkar',
+    name: { kn: 'ಶ್ರೀ ಗಣೇಶ್‌ ರಾವ್‌ ಕೇಸರಕರ್‌', en: 'Sri. Ganesh Rao Kesarkar' },
+    title: {
+      kn: 'ಅಧ್ಯಕ್ಷರು, ಕರ್ನಾಟಕ ಟೆಲಿವಿಷನ್‌ ಅಸೋಸಿಯೇಷನ್‌',
+      en: 'President, Karnataka Television Association',
+    },
+  },
+]
+
 export const editor = {
   id: 'editor',
   image: '/contactus/shashidhara.webp',

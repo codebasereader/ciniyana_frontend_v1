@@ -190,7 +190,7 @@ export default function PosterListPage() {
               key={post.id}
               className="overflow-hidden rounded-xl border border-[#e5d9c8] bg-white shadow-sm"
             >
-              <div className="aspect-[3/4] bg-[#ece8e1]">
+              <div className="aspect-[4/5] bg-[#ece8e1]">
                 {post.image ? (
                   <img
                     src={post.image}

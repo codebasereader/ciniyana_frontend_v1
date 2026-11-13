@@ -1,11 +1,23 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { extractYouTubeId, getYouTubeThumbnail } from '../../../../lib/youtube'
 import { slugify, validateVideoFields } from '../utils'
+import FormErrorSummary, { scrollToFirstError } from '../../../components/FormErrorSummary'
 
-function Field({ label, error, children }) {
+function Field({ label, error, required = false, children }) {
   return (
     <label className="flex flex-col gap-1.5 text-sm font-semibold text-[#333]">
-      {label}
+      <span>
+        {label}
+        {required ? (
+          <>
+            <span className="text-[#ac222b]" aria-hidden="true">
+              {' '}
+              *
+            </span>
+            <span className="sr-only"> (required)</span>
+          </>
+        ) : null}
+      </span>
       {children}
       {error ? (
         <span className="font-medium text-[#ac222b]" role="alert">
@@ -31,6 +43,7 @@ export default function VideoForm({
   const [fields, setFields] = useState(initialFields)
   const [slugManual, setSlugManual] = useState(Boolean(initialFields.slug))
   const [errors, setErrors] = useState({})
+  const formRef = useRef(null)
 
   useEffect(() => {
     setFields(initialFields)
@@ -55,17 +68,23 @@ export default function VideoForm({
     event.preventDefault()
     const nextErrors = validateVideoFields(fields)
     setErrors(nextErrors)
-    if (Object.keys(nextErrors).length > 0) return
+    if (Object.keys(nextErrors).length > 0) {
+      scrollToFirstError(formRef.current)
+      return
+    }
     onSubmit(fields)
   }
 
   return (
     <form
       id="admin-post-form"
+      ref={formRef}
+      noValidate
       onSubmit={handleSubmit}
       className="mx-auto flex w-full min-w-0 max-w-3xl flex-col gap-5"
     >
-      <Field label="YouTube URL" error={errors.youtubeUrl}>
+      <FormErrorSummary errors={errors} />
+      <Field label="YouTube URL" error={errors.youtubeUrl} required>
         <input
           className={inputClass}
           placeholder="https://www.youtube.com/watch?v=..."
@@ -91,14 +110,14 @@ export default function VideoForm({
       ) : null}
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Title (English)" error={errors.titleEn}>
+        <Field label="Title (English)" error={errors.titleEn} required>
           <input
             className={inputClass}
             value={fields.titleEn}
             onChange={(e) => setField('titleEn', e.target.value)}
           />
         </Field>
-        <Field label="Title (Kannada)" error={errors.titleKn}>
+        <Field label="Title (Kannada)" error={errors.titleKn} required>
           <input
             className={inputClass}
             value={fields.titleKn}
