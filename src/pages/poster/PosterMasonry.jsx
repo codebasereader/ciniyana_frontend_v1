@@ -29,12 +29,14 @@ export default function PosterMasonry({ posters }) {
               onClick={() => setActiveIndex(index)}
               className="group relative mb-3 block w-full break-inside-avoid overflow-hidden rounded-sm bg-[#f3ebe0] text-left shadow-sm hover:shadow-md sm:mb-4"
             >
-              <img
-                src={poster.image}
-                alt={title}
-                className="block w-full object-cover group-hover:brightness-[0.97]"
-                loading="lazy"
-              />
+              <div className="aspect-[4/5] w-full overflow-hidden">
+                <img
+                  src={poster.image}
+                  alt={title}
+                  className="block h-full w-full object-cover group-hover:brightness-[0.97]"
+                  loading="lazy"
+                />
+              </div>
               <Watermark />
               <div className="px-2.5 py-2 sm:px-3 sm:py-2.5">
                 <span className="font-['Baloo_Tamma_2'] text-xs font-semibold leading-snug text-[#333] sm:text-sm">

@@ -98,7 +98,7 @@ export default function PosterLightbox({
               <img
                 src={active.image}
                 alt={title || ''}
-                className="max-h-[min(62vh,720px)] w-auto max-w-full object-contain shadow-2xl"
+                className="aspect-[4/5] h-[min(62vh,720px)] max-w-full object-cover shadow-2xl"
                 draggable={false}
               />
               <Watermark />
